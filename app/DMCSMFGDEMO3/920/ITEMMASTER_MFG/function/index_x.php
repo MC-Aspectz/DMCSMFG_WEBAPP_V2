@@ -181,7 +181,7 @@ function insert() {
                     "ITEMSEARCH" => $_POST['ITEMSEARCH'],
                     "ITEMNAME" => $_POST['ITEMNAME'],
                     "ITEMSPEC" => $_POST['ITEMSPEC'],
-                    "ITEMDRAWNO" => '',
+                    "ITEMDRAWNO" => isset($_POST['ITEMDRAWNO']) ? $_POST['ITEMDRAWNO']: '',
                     "ITEMDOC" => '',
                     "MATERIALCD" => $_POST['MATERIALCD'],//
                     "ACCOUNTCD" => '',
@@ -304,7 +304,7 @@ function update() {
                     "ITEMSEARCH" => $_POST['ITEMSEARCH'],
                     "ITEMNAME" => $_POST['ITEMNAME'],
                     "ITEMSPEC" => $_POST['ITEMSPEC'],
-                    "ITEMDRAWNO" => '',
+                    "ITEMDRAWNO" => isset($_POST['ITEMDRAWNO']) ? $_POST['ITEMDRAWNO']: '',
                     "ITEMDOC" => '',
                     "MATERIALCD" => $_POST['MATERIALCD'],//
                     "ACCOUNTCD" => '',
@@ -420,7 +420,7 @@ function setOldValue() {
 }
 
 function setSessionArray($arr){
-    $keepField = array( "ITEMCD", "ITEMNAME", "ITEMSPEC", "ITEMTYP", "CATALOGCD", "CATALOGNAME", "ITEMSEARCH", "ITEMBOI", "ITEMBOITYP",
+    $keepField = array( "ITEMCD", "ITEMNAME", "ITEMSPEC", 'ITEMDRAWNO', "ITEMTYP", "CATALOGCD", "CATALOGNAME", "ITEMSEARCH", "ITEMBOI", "ITEMBOITYP",
                         "ITEMLEADTIME", "ITEMPURADDDAY", "ITEMTYPE", "ITEMWHTTYP", "MATERIALCD", "MATERIALNAME", "ITEMPOUNITRATE", "ITEMMINSTOCK",
                         "SUPPLIERCD", "SUPPLIERNAME", "STORAGECD", "STORAGENAME", "ITEMADDTANABAN", "ITEMUNITTYP", "ITEMPOUNITTYP", "ITEMINVCALCTYP",
                         "ITEMORDRULETYP", "ITEMINVPRICE", "ITEMSTDPURPRICE", "ITEMSHOPPRICE", "ITEMFIXORDER", "ITEMMINORDER", "ITEMFIFOLISTFLG", 

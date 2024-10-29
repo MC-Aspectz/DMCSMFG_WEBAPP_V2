@@ -16,6 +16,7 @@ $('#SEARCHITEM').on('click', function() {
 });
 
 ITEMCODE.on('keyup change', function (e) {
+
     if ((e.type === 'change') || (e.key === 'Enter' || e.keyCode === 13)) {
         return getElement('ITEMCODE', ITEMCODE.val());
     }
@@ -64,22 +65,24 @@ async function getElement(code, value) {
     data.append('action', code);
     await axios.post('../PLANVIEW/function/index_x.php', data)
     .then(response => {
-        // console.log(response.data);
         let result = response.data;
-        if(objectArray(result)) {
-            // console.log(result);
-            $.each(result, function(key, value) {
-                if(document.getElementById(''+key+'')) {
-                    document.getElementById(''+key+'').value = value;
-                }
-            });
+        if(response.status == 200) {
+            emptyTable();
+            if(objectArray(result)) {
+                // console.log(result);
+                $.each(result, function(key, value) {
+                    if(document.getElementById(''+key+'')) {
+                        document.getElementById(''+key+'').value = value;
+                    }
+                });
+            }
         }
         unRequired();
         document.activeElement.blur();
         document.getElementById('loading').style.display = 'none';
     })
     .catch(e => {
-        // console.log(e);
+        console.log(e);
         document.getElementById('loading').style.display = 'none';
     });
 }
@@ -192,9 +195,9 @@ function questionDialog(type, txt, btnyes, btnno) {
         if (type == 1) {
             return closeApp($('#appcode').val()); 
         } else if (type == 2) {
-            // $("#loading").show();
+            // $('#loading').show();
         } else {
-        // 
+            // 
         }
     }
   });
@@ -215,6 +218,25 @@ function emptyRows(maxrow) {
         }
         dvwdetail.appendChild(row);
     }
+}
+
+function emptyTable() {
+    let maxrow = document.getElementById('maxrow').value;
+    $('#dvwdetail').empty();
+    for (var i = 1; i <= maxrow; i++) {
+        $('#dvwdetail').append('<tr class="divide-y divide-gray-200 row-empty" id="rowId'+i+'>">' +
+                                        '<td class="h-6 border border-slate-700"></td>' +
+                                        '<td class="h-6 border border-slate-700"></td>' +
+                                        '<td class="h-6 border border-slate-700"></td>' +
+                                        '<td class="h-6 border border-slate-700"></td>' +
+                                        '<td class="h-6 border border-slate-700"></td>' +
+                                        '<td class="h-6 border border-slate-700"></td>' +
+                                        '<td class="h-6 border border-slate-700"></td>' +
+                                        '<td class="h-6 border border-slate-700"></td>' +
+                                        '<td class="h-6 border border-slate-700"></td>' +
+                                        '<td class="h-6 border border-slate-700"></td></tr>');
+    }
+    $('#rowcount').html('0');
 }
 
 function unRequired() {

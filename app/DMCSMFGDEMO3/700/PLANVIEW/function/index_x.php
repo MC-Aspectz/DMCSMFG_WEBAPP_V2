@@ -141,12 +141,14 @@ $PRODUCTIONPLANTYPE = $data['DRPLANG']['PRODUCTIONPLANTYPE'];
 // echo '</pre>';
 // --------------------------------------------------------------------------//
 function getItem() {
+
     $javafunc = new PLANVIEW;
     $Param = array('ITEMCODE' => isset($_POST['ITEMCODE']) ? $_POST['ITEMCODE']: '',
                    'FACTORYCODE' => isset($_POST['FACTORYCODE']) ? $_POST['FACTORYCODE']: '');
     $query = $javafunc->getItem($Param);
     if(is_array($query)) {
         $data = $query;
+        $data['ITEM'] = array();
     } else {
         $data = array(  'ITEMCODE' => '',
                         'ITEMNAME' => '',
@@ -163,6 +165,7 @@ function getItem() {
                         'INV_OF_ORDER' => '',
                         'BACKLOG' => '',
                         'ALLOCATE' => '');
+        $data['ITEM'] = array();
     }
 
     setSessionArray($data);

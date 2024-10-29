@@ -28,6 +28,7 @@
         <!--   start::Main Content  -->
         <main class="flex flex-1 overflow-y-auto paragraph">
             <!-- Content Page -->
+            <input type="hidden" id="maxrow" name="maxrow" value="<?=$maxrow?>">
             <input type="hidden" id="appcode" name="appcode" value="<?=$appcode?>">
             <input type="hidden" id="comcd" name="comcd" value="<?=$_SESSION['COMCD']?>">
             <input type="hidden" id="sessionUrl" name="sessionUrl" value="<?=$_SESSION['APPURL']?>">
@@ -229,7 +230,7 @@
 
                 <div class="flex p-2">
                     <div class="flex w-12/12">
-                        <label class="text-color text-[12px]"><?=checklang('ROWCOUNT');?>  <span id="record"><?=$minrow;?></span></label>
+                        <label class="text-color text-[12px]"><?=checklang('ROWCOUNT');?>  <span id="rowcount"><?=$minrow;?></span></label>
                     </div>
                 </div>
 

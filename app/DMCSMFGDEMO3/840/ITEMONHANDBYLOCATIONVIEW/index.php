@@ -57,7 +57,7 @@
                                 <div class="flex mb-1">
                                     <div class="flex w-8/12 px-2">
                                         <label class="text-color block text-sm w-2/12 pr-2 pt-1" id="STORAGETYPE_TXT"><?=checklang('STORAGETYPE')?></label>
-                                        <select class="text-control text-[12px] shadow-md border mr-1 px-3 h-7 w-3/12 text-left rounded-xl border-gray-300" id="LOCTYP" name="LOCTYP" onchange="unRequired();">
+                                        <select class="text-control text-[12px] shadow-md border mr-1 px-3 h-7 w-3/12 text-left rounded-xl border-gray-300" id="LOCTYP" name="LOCTYP" onchange="unRequired();" required>
                                             <option value=""></option>
                                             <?php foreach ($STORAGETYPE as $key => $item) { ?>
                                                 <option value="<?=$key ?>" <?=(isset($data['LOCTYP']) && $data['LOCTYP'] == $key) ? 'selected' : '' ?>><?=$item ?></option>

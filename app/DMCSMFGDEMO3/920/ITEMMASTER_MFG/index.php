@@ -69,22 +69,22 @@
             <div class="flex mb-1 py-1">
                 <div class="flex w-6/12">
                     <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('ITEMNAME'); ?></label>
-                    <input class="text-control shadow-md border z-20 rounded-xl h-7 w-4/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                           type="text" id="ITEMNAME" name="ITEMNAME" <?php if(!empty($data['ITEMNAME'])){ ?> value="<?php echo $data['ITEMNAME']; ?>" <?php } else { ?> value="" <?php }?>/>
+                    <input class="text-control shadow-md border z-20 rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                           type="text" id="ITEMNAME" name="ITEMNAME" value="<?=isset($data['ITEMNAME']) ? $data['ITEMNAME']: ''?>"/>
                 </div>
 
                 <div class="flex w-6/12">
                     <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('SEARCH_CHAR'); ?></label>
                     <input class="text-control shadow-md border z-20 rounded-xl h-7 w-4/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500 req"
-                           type="text" id="ITEMSEARCH" name="ITEMSEARCH" required onchange="unRequired();" <?php if(!empty($data['ITEMSEARCH'])){ ?> value="<?php echo $data['ITEMSEARCH']; ?>" <?php } else { ?> value="" <?php }?> />
+                           type="text" id="ITEMSEARCH" name="ITEMSEARCH" onchange="unRequired();" value="<?=isset($data['ITEMSEARCH']) ? $data['ITEMSEARCH']: ''?>" required/>
                 </div>
             </div>
 
             <div class="flex mb-1 py-1">
                 <div class="flex w-6/12">
-                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('SPECIFICATE'); ?></label>
-                    <input class="text-control shadow-md border z-20 rounded-xl h-7 w-4/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                           type="text" id="ITEMSPEC" name="ITEMSPEC" <?php if(!empty($data['ITEMSPEC'])){ ?> value="<?php echo $data['ITEMSPEC']; ?>"<?php } else { ?> value="" <?php }?>/>&emsp;&nbsp;
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('DRAWING'); ?></label>
+                    <input class="text-control shadow-md border z-20 rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                           type="text" id="ITEMDRAWNO" name="ITEMDRAWNO"  value="<?=isset($data['ITEMDRAWNO']) ? $data['ITEMDRAWNO']: ''?>" />
                 </div>
 
                 <div class="flex w-6/12">
@@ -95,6 +95,25 @@
                             <?php foreach ($typeItem as $key => $item) { ?>
                             <option value="<?php echo $key ?>" <?php echo (isset($data['ITEMTYP']) && $data['ITEMTYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
                             <?php } ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex mb-1 py-1">
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('SPECIFICATE'); ?></label>
+                    <input class="text-control shadow-md border z-20 rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                           type="text" id="ITEMSPEC" name="ITEMSPEC"  value="<?=isset($data['ITEMSPEC']) ? $data['ITEMSPEC']: ''?>" />
+                </div>
+
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('WHTAXTYP'); ?></label>
+                    <select class="text-control shadow-md border mr-1 px-3 h-7 w-4/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                            id="ITEMWHTTYP" name="ITEMWHTTYP">
+                        <option value=""></option>
+                        <?php foreach ($whtaxtyp as $key => $item) { ?>
+                            <option value="<?php echo $key ?>" <?php echo (!empty($data['ITEMWHTTYP']) && $data['ITEMWHTTYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -118,12 +137,12 @@
                 </div>
 
                 <div class="flex w-6/12">
-                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('WHTAXTYP'); ?></label>
-                    <select class="text-control shadow-md border mr-1 px-3 h-7 w-4/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                            id="ITEMWHTTYP" name="ITEMWHTTYP">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('PRDER_RULE'); ?></label>
+                    <select class="text-control shadow-md border mr-1 px-3 h-7 w-4/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 req"
+                            id="ITEMORDRULETYP" name="ITEMORDRULETYP" onchange="unRequired();" required>
                         <option value=""></option>
-                        <?php foreach ($whtaxtyp as $key => $item) { ?>
-                            <option value="<?php echo $key ?>" <?php echo (!empty($data['ITEMWHTTYP']) && $data['ITEMWHTTYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
+                        <?php foreach ($itemOrder as $key => $item) { ?>
+                            <option value="<?php echo $key ?>" <?php echo (isset($data['ITEMORDRULETYP']) && $data['ITEMORDRULETYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
                         <?php } ?>
                     </select>
                 </div>
@@ -151,14 +170,16 @@
                 </div>
 
                 <div class="flex w-6/12">
-                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('PRDER_RULE'); ?></label>
+                    <!-- Unit of Measure -->
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('MEASURE_UNIT'); ?></label>
                     <select class="text-control shadow-md border mr-1 px-3 h-7 w-4/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 req"
-                            id="ITEMORDRULETYP" name="ITEMORDRULETYP" onchange="unRequired();" required>
+                            id="ITEMUNITTYP" name="ITEMUNITTYP" onchange="unRequired();" required>
                         <option value=""></option>
-                        <?php foreach ($itemOrder as $key => $item) { ?>
-                            <option value="<?php echo $key ?>" <?php echo (isset($data['ITEMORDRULETYP']) && $data['ITEMORDRULETYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
+                        <?php foreach ($unit as $key => $item) { ?>
+                            <option value="<?php echo $key ?>" <?php echo (!empty($data['ITEMUNITTYP']) && $data['ITEMUNITTYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
                         <?php } ?>
                     </select>
+                    <!-- Unit of Measure -->
                 </div>
             </div>
 
@@ -182,32 +203,8 @@
                 </div>
 
                 <div class="flex w-6/12">
-                    <!-- Unit of Measure -->
-                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('MEASURE_UNIT'); ?></label>
-                    <select class="text-control shadow-md border mr-1 px-3 h-7 w-4/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 req"
-                            id="ITEMUNITTYP" name="ITEMUNITTYP" onchange="unRequired();" required>
-                        <option value=""></option>
-                        <?php foreach ($unit as $key => $item) { ?>
-                            <option value="<?php echo $key ?>" <?php echo (!empty($data['ITEMUNITTYP']) && $data['ITEMUNITTYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
-                        <?php } ?>
-                    </select>
-                    <!-- Unit of Measure -->
-                </div>
-            </div>
-
-            <div class="flex mb-1 py-1">
-                <div class="flex w-6/12">
-                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('LEADTIME'); ?></label>
-                    <input class="text-control shadow-md border z-20 rounded-xl h-7 w-2/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                           type="text" id="ITEMLEADTIME" name="ITEMLEADTIME" onchange="unRequired();" required 
-                           <?php if(!empty($data['ITEMLEADTIME'])){ ?> value="<?php echo number_format($data['ITEMLEADTIME'], 0); ?>"<?php }
-                            else { ?> value="" <?php }?> oninput="this.value = this.value.replace(/[^0-9.,]/g, '').replace(/(\..*?)\..*/g, '$1');"/>
-                    <label class="text-color block text-sm w-1/12 pr-2 pt-1 ml-2"><?=checklang('DAYS'); ?></label>
-                </div>
-
-                <div class="flex w-6/12">
                     <!-- PO Unit -->
-                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('po_unit'); ?></label>
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('PO_UNIT'); ?></label>
                     <select class="text-control shadow-md border mr-1 px-3 h-7 w-4/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 req"
                             id="ITEMPOUNITTYP" name="ITEMPOUNITTYP" onchange="unRequired();" required>
                         <option value=""></option>
@@ -225,6 +222,12 @@
 
             <div class="flex mb-1 py-1">
                 <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('LEADTIME'); ?></label>
+                    <input class="text-control shadow-md border z-20 rounded-xl h-7 w-2/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                           type="text" id="ITEMLEADTIME" name="ITEMLEADTIME" onchange="unRequired();" required 
+                           <?php if(!empty($data['ITEMLEADTIME'])){ ?> value="<?php echo number_format($data['ITEMLEADTIME'], 0); ?>"<?php }
+                            else { ?> value="" <?php }?> oninput="this.value = this.value.replace(/[^0-9.,]/g, '').replace(/(\..*?)\..*/g, '$1');"/>
+                    <label class="text-color block text-sm w-1/12 pr-2 pt-1 ml-2"><?=checklang('DAYS'); ?></label>
                     <label class="text-color block text-sm w-3/12 pr-2 pt-1 ml-2"><?=checklang('UNITPRICE_INV'); ?></label>
                     <input class="text-control shadow-md border z-20 rounded-xl h-7 w-2/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                            type="text" id="ITEMINVPRICE" name="ITEMINVPRICE" 
