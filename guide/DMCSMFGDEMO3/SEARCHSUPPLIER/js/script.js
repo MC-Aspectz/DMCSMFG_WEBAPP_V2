@@ -1,8 +1,8 @@
+
+var SUPCD;
+var isItem = false;
 var page = $('#page').val();
 var index = $('#index').val();
-
-var isItem = false;
-var SUPCD;
 $('table#table_result tr').click(function () {
     $('table#table_result tr').removeAttr('id')
 
@@ -18,7 +18,6 @@ $('table#table_result tr').click(function () {
         $('#address1').html(item.eq(3).text());
         $('#address2').html(item.eq(4).text());
     }
-
 
     $('#select_item').on('click', function() {
         if(page == 'SEARCHPURCHASEORDER') {
@@ -36,8 +35,6 @@ $('#view_item').on('click', function() {
 });    
 
 $('#back').on('click', function() {
-    // window.history.back();
-    // window.history.go(-1); return false;
     if(page == 'SEARCHPURCHASEORDER') {
         return window.location.href=$('#sessionUrl').val() + '/guide/'+ $('#comcd').val() +'/SEARCHPURCHASEORDER/index.php';
     } else {
@@ -47,14 +44,16 @@ $('#back').on('click', function() {
 
 function HandleResult(result) {
     try {
-        if(page == 'ACC_PURCHSEORDERENTRY_THA' || page == 'ACC_RECEIVEPURCHASE_THA' || page == 'ACC_PURCHASEBILLSLIP' || page == 'ACC_PAYMENTENTRY3_THARD' || page == 'ACC_WHTMETHOD2' || page == 'ITEMMASTER' || page == 'ACC_GENERALVO_THARD' || page == 'ACC_ADJUSTVO_THA' || page == 'ACC_ADJUSTVO_ONLY_THA' || page == 'ACC_PETTYCASHVO_THA') {
-            window.opener.HandlePopupResult('SUPPLIERCD', result);
+        // if(page == 'ACC_PURCHSEORDERENTRY_THA' || page == 'ACC_RECEIVEPURCHASE_THA' || page == 'ACC_PURCHASEBILLSLIP' || page == 'ACC_PAYMENTENTRY3_THARD' || page == 'ACC_WHTMETHOD2' || page == 'ITEMMASTER' || page == 'ACC_GENERALVO_THARD' || page == 'ACC_ADJUSTVO_THA' || page == 'ACC_ADJUSTVO_ONLY_THA' || page == 'ACC_PETTYCASHVO_THA') {
+        //     window.opener.HandlePopupResult('SUPPLIERCD', result);        
+        if(page == 'ACC_PURCHASEREQUISITION_THA') {
+            window.opener.HandlePopupResult('SUPCD', result);
         } else if(page == 'ACC_OUTSTANDINGAP' || page == 'SEARCHPURCHASE' || page == 'SEARCHGL' || page == 'SUPPLIERMASTER_DMCS_THA') {
             window.opener.HandlePopupResultIndex('SUPPLIERCD', result, index);
         } else if(page == 'ITEMMASTER_MFG') {
             window.opener.HandlePopupResult('suppliercd', result);
         } else {
-            window.opener.HandlePopupResult('SUPCD', result);
+            window.opener.HandlePopupResult('SUPPLIERCD', result);
         }
     } catch (err) {
         // console.log(err);
@@ -91,14 +90,16 @@ async function clearForm(form) {
     // clearing table empty Row
     $('#table_result > tbody > tr').remove();
     for (var i = 0; i < 10; i++) {
-        $('#table_result tbody').append('<tr class="flex w-full p-0 divide-x">' +
-                                        '<td class="h-6 w-1/12"></td>' +
-                                        '<td class="h-6 w-3/12"></td>' +
-                                        '<td class="h-6 w-4/12"></td>' +
-                                        '<td class="h-6 w-4/12"></td></tr>');
+        $('#table_result tbody').append('<tr class="row-empty" id="rowId' + i +'">' +
+                                            '<td class="h-6 border border-slate-700"></td>' +
+                                            '<td class="h-6 border border-slate-700"></td>' +
+                                            '<td class="h-6 border border-slate-700"></td>' +
+                                            '<td class="h-6 border border-slate-700"></td></tr>'
+        );
     }
 
     document.getElementById('rowcount').innerHTML = '0';
+
 
     return false;
 }

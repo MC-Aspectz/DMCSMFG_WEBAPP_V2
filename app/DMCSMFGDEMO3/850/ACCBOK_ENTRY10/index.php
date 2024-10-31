@@ -713,8 +713,11 @@
 
     function HandlePopupResult(code, result) {
         // console.log("result of popup is: " + code + ' : ' + result);
-        $("#loading").show();
-        return window.location.href = $('#sessionUrl').val() + '/app/'+ $('#comcd').val() +'/850/ACCBOK_ENTRY10/index.php?'+code+'=' + result;
+        if(code == 'ACCCD') {
+            return getElement('ACC_CD', result);
+        } else {
+            return getElement(code, result);
+        }
     }
 </script>
 </html>

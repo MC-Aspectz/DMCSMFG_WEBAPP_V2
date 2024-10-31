@@ -13,30 +13,14 @@ if (isset($_SESSION['LANG'])) {
 }
 
 $javaFunc = new CountryIndex;
+$minrow = 0;
+$maxrow = 10;
 
 $P2 = '';
 $tdata = array();
 
-$minrow = 0;
-$maxrow = 10;
-
 if(isset($_POST['search'])) {
 	$P2 = isset($_POST['P2']) ? $_POST['P2']: '';
 	$tdata = $javaFunc->searchCountry($P2);
-
-
-	// $P2 = $_POST['P2'];
-	// if(!empty($P2)) {
-	//     $excute = $javaFunc->searchCountry($P2);
-    //   	$tdata[] = array('COUNTRYCD' => $excute['COUNTRYCD'],
-	// 	  'COUNTRYNAME' => $excute['COUNTRYNAME']
-	// );
-							
-	// } else {
-		
-	// 	$tdata = $javaFunc->searchCountry($P2);
-	// }
-
-	
 }
 ?>

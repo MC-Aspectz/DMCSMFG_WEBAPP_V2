@@ -1,23 +1,21 @@
 <?php
+//--------------------------------------------------------------------------------
+//  SESSION
+//--------------------------------------------------------------------------------
+//  Load Including Files
 require_once('index_class.php');
-require_once($_SESSION['APPPATH'] . '/common/syslogic.php');
-require_once($_SESSION['APPPATH'] . '/include/menu.php');
 require_once($_SESSION['APPPATH'] . '/common/utils.php');
+require_once($_SESSION['APPPATH'] . '/include/menubar.php');
+//--------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------
 //  Pack Code & Name, Application Code & Name
 //--------------------------------------------------------------------------------
-// $arydirname = explode("\\", dirname(__FILE__));  // for localhost
-$arydirname = explode("/", dirname(__FILE__));  // for web
-$appcode = $arydirname[array_key_last($arydirname) - 1];
+$arydirname = explode('/', dirname(__FILE__));
+$appcode = $arydirname[array_key_last($arydirname)- 1];
 $packcode = $arydirname[array_key_last($arydirname) - 2];
-$syslogic = new Syslogic;
-if(isset($_SESSION['APPCODE']) && $_SESSION['APPCODE'] != $appcode) {
-    $syslogic->ProgramRundelete($_SESSION['APPCODE']);
-    $syslogic->setLoadApp($appcode);     
-}
-if ($_SESSION['MENU'] != "" and is_array($_SESSION['MENU'])) {
+if ($_SESSION['MENU'] != '' and is_array($_SESSION['MENU'])) {
     // Get Pack Name
-    $packname = "";
+    $packname = '';
     foreach($_SESSION['MENU'] as $menuitem) {
         if ($menuitem['NODEDATA'] == $packcode) {
             $packname = $menuitem['NODETITLE'];
@@ -25,354 +23,303 @@ if ($_SESSION['MENU'] != "" and is_array($_SESSION['MENU'])) {
         }  // if ($menuitem['NODEDATA'] == $packcode) {
     }  // foreach($_SESSION['MENU'] as $menuitem) {
     // Get Application Name
-    $appname = "";
+    $appname = '';
     foreach($_SESSION['MENU'] as $menuitem) {
         if ($menuitem['NODEDATA'] == $appcode) {
             $appname = $menuitem['NODETITLE'];
             break;  // foreach($_SESSION['MENU'] as $menuitem) {
         }  // if ($menuitem['NODEDATA'] == $appcode) {
     }  // foreach($_SESSION['MENU'] as $menuitem) {
-}  // if ($_SESSION['MENU'] != "" and is_array($_SESSION['MENU'])) {
-$_SESSION['PACKCODE'] = $packcode;
-$_SESSION['PACKNAME'] = $packname;
+}  // if ($_SESSION['MENU'] != '' and is_array($_SESSION['MENU'])) {
+
+//--------------------------------------------------------------------------------
+// No This Application in Menu (Unauthorized Application)
+if ($appname == '') {
+    // header('Location:home.php');
+    // header('Location:'.(isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/' . 'DMCS_WEBAPP'.'/home.php');
+    header('Location:'.(isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/' . $arydirname[array_key_last($arydirname) - 5].'/home.php');
+}
+//--------------------------------------------------------------------------------
 $_SESSION['APPCODE'] = $appcode;
 $_SESSION['APPNAME'] = $appname;
-# print_r($_SESSION['APPURL'].'/app/'.$_SESSION['COMCD'].'/'.$_SESSION['PACKCODE'].'/'.$_SESSION['APPCODE'].'/index.php');
+$_SESSION['PACKCODE'] = $packcode;
+$_SESSION['PACKNAME'] = $packname;
+//--------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------
 // LANGUAGE
 //--------------------------------------------------------------------------------
 // print_r($_SESSION['LANG']);
 if (isset($_SESSION['LANG'])) {
-    // require_once(dirname(__FILE__, 2). '/lang/jp.php');
     require_once(dirname(__FILE__, 2).'/lang/'.strtolower($_SESSION['LANG']).'.php');
 } else {  
-    require_once(dirname(__FILE__, 2).'/lang/en.php');
-}
-
-
-$systemName = 'SupplierMaster';
+    require_once(dirname(__FILE__, 2). '/lang/en.php');
+}  // if (isset($_SESSION['LANG'])) { else
+//--------------------------------------------------------------------------------
+// <!-- ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ -->
 $data = array();
-$COUNTRYCD = '';
-$STATECD = '';
-$CITYCD = '';
+$data['INS'] = true;
+$syslogic = new Syslogic;
+$javaFunc = new SupplierMaster;
+$systemName = strtolower($appcode);
+//--------------------------------------------------------------------------------
+//  GET
+//--------------------------------------------------------------------------------
+if(!empty($_GET)) { 
+    if(isset($_GET['SUPPLIERCD'])) {
+        unsetSessionData();
+        $data['INS'] = true;
+        $data['SUPPLIERCD'] = isset($_GET['SUPPLIERCD']) ? $_GET['SUPPLIERCD']: '';
+        $query = $javaFunc->getSupplier($data['SUPPLIERCD']);
+        // echo '<pre>';
+        // print_r($query);
+        // echo '</pre>';
+        if(!empty($query)) {
+            $data = $query;
+            $data['INS'] = false;
+        }
 
-if(!empty($_GET)) { //รับ
-    $javaFunc = new SupplierMaster;
-   // if(checkSessionData()) { $data = getSessionData(); } 
-    if(!empty($_GET['suppliercd'])) {
-        if(isset($_GET['index']) && $_GET['index']==2){
+        setSessionArray($data);
 
-       // print_r(2);
-        $query = $javaFunc->getSupplier($_GET['suppliercd']);
-        $data = $query;
-       
-        // if(!empty($query)) { setSessionData('isInsert', 'off'); } else { setSessionData('isInsert', 'on'); }
+        if(checkSessionData()) { $data = getSessionData(); } 
     }
-    else{
-        $query = $javaFunc->getBillSupplier($_GET['suppliercd']);
-        $data['SUPBILLCD'] = $query['SUPBILLCD'];
-        $data['SUPBILLNAME'] = $query['SUPBILLNAME'];
-       // print_r($query);
+}
+//--------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------
+//  POST
+//--------------------------------------------------------------------------------
+if(!empty($_POST)) {
+    if (isset($_POST['action'])) {
+        if ($_POST['action'] == 'unsetsession') { unsetSessionData(); }
+        if ($_POST['action'] == 'keepdata') { setOldValue(); }
+        if ($_POST['action'] == 'FACTORYCODE') { SetBranch(); }
+        if ($_POST['action'] == 'SUPPLIERSHORTNAME') { chack_l(); }
+        if ($_POST['action'] == 'SUPPLIERADD01') { ChkBranch(); }
+        if ($_POST['action'] == 'COUNTRYCD') { getCity(); }
+        if ($_POST['action'] == 'STATECD') { getCity(); }
+        if ($_POST['action'] == 'CITYCD') { getCity(); }
+        if ($_POST['action'] == 'SUPPLIERZIPCODE') { getGMap(); }
+        if ($_POST['action'] == 'SUPPLIERADDR1') { getGMap(); }
+        if ($_POST['action'] == 'SUPPLIERADDR2') { getGMap(); }
+        if ($_POST['action'] == 'SUPBILLCD') { getBillSupplier(); }
+        if ($_POST['action'] == 'CURRENCYCD') { getCurrency(); }
+        if ($_POST['action'] == 'INSERT') { insert(); }
+        if ($_POST['action'] == 'UPDATE') { update(); }
+        if ($_POST['action'] == 'DELETE') { delete(); }
     }
-       // if(!empty($data)) { setSessionArray($data); } // else { unsetSessionData(); }
-    } else if(!empty($_GET['countrycd'])) {
-        $STATECD = isset($data['STATECD'])?$data['STATECD']:'';
-        $CITYCD = isset($data['CITYCD'])? $data['CITYCD']:'';
-        $query = $javaFunc->getCountrycd($_GET['countrycd'], $STATECD, $CITYCD);
-        $data['COUNTRYCD'] = $query['COUNTRYCD'];
-     
-       
-    } else if(!empty($_GET['statecd'])) {
-        $COUNTRYCD = isset($data['COUNTRYCD'])?$data['COUNTRYCD']:'';
-        $CITYCD = isset($data['CITYCD'])? $data['CITYCD']:'';
-        $query = $javaFunc->getState($CITYCD,$_GET['statecd'],$CITYCD);
-        $data['STATECD'] = $query['STATECD'];
-       
-    } else if(!empty($_GET['citycd'])) {
-        $COUNTRYCD = isset($data['COUNTRYCD'])?$data['COUNTRYCD']:'';
-        $STATECD = isset($data['STATECD'])? $data['STATECD']:'';
-        $query = $javaFunc->getCity($COUNTRYCD,$STATECD,$_GET['citycd']);
-        $data['CITYCD'] = $query['CITYCD'];
-        $data['CITYNAME'] = $query['CITYNAME'];
-      
-    } else if(!empty($_GET['currencycd'])) {
-        $query = $javaFunc->getCurrency($_GET['currencycd']);
-        $data['CURRENCYCD'] = $query['CURRENCYCD'];
-      
-    } else if(!empty($_GET['suppliershortname'])) {
-
-    $SUPPLIERSHORTNAME = isset($_GET['suppliershortname']) ? $_GET['suppliershortname']:'';     
-    $excute = $javaFunc->chack_l($SUPPLIERSHORTNAME);
-    if(!empty($excute)){
-    $tdata[] = array('SUPPLIERSHORTNAME' => $excute['SUPPLIERSHORTNAME']); 
-    }
-} else if(!empty($_GET['supplierzipcode'])) {
-
-    $SUPPLIERADDR1 = isset($_GET['SUPPLIERADDR1'])?$_GET['SUPPLIERADDR1']:'';
-    $SUPPLIERADDR2 = isset($_GET['SUPPLIERADDR2'])? $_GET['SUPPLIERADDR2']:'';
-    $query = $javaFunc->getGMap($SUPPLIERADDR1,$SUPPLIERADDR2,$_GET['supplierzipcode']);
-   
-    // $data['SUPPLIERADDR1'] = $query['SUPPLIERADDR1'];
-    // $data['SUPPLIERADDR2'] = $query['SUPPLIERADDR2'];
-    // $data['SUPPLIERZIPCODE'] = $query['SUPPLIERZIPCODE'];
-
-
-
-    // $SUPPLIERADDR1 = isset($_GET['SUPPLIERADDR1']) ? $_GET['SUPPLIERADDR1']:'';
-    // $SUPPLIERADDR2 = isset($_GET['SUPPLIERADDR2']) ? $_GET['SUPPLIERADDR2']:'';   
-    // $excute = $javaFunc->getGMap($SUPPLIERADDR1,$SUPPLIERADDR2,$_GET['supplierzipcode']);
-    // if(!empty($excute)){
-    //  $tdata[] = array('SUPPLIERADDR1' => $excute['SUPPLIERADDR1'],
-    //  'SUPPLIERADDR2' => $excute['SUPPLIERADDR2'],
-    //  'SUPPLIERZIPCODE' => $excute['SUPPLIERZIPCODE'],); 
-    // }
 }
+//--------------------------------------------------------------------------------
 
-else if(!empty($_GET['supplieraddr1'])) {
-    $SUPPLIERZIPCODE = isset($_GET['SUPPLIERZIPCODE'])?$_GET['SUPPLIERZIPCODE']:'';
-    $SUPPLIERADDR2 = isset($_GET['SUPPLIERADDR2'])? $_GET['SUPPLIERADDR2']:'';
-    $query = $javaFunc->getGMap($SUPPLIERZIPCODE,$SUPPLIERADDR2,$_GET['supplieraddr1']);
-    print_r($query);
-}
-
-else if(!empty($_GET['supplieraddr2'])) {
-    $SUPPLIERZIPCODE = isset($_GET['SUPPLIERZIPCODE'])?$_GET['SUPPLIERZIPCODE']:'';
-    $SUPPLIERADDR1 = isset($_GET['SUPPLIERADDR1'])? $_GET['SUPPLIERADDR1']:'';
-    $query = $javaFunc->getGMap($SUPPLIERZIPCODE,$SUPPLIERADDR1,$_GET['supplieraddr2']);
-    print_r($query);
-}
-
-
-    if(!empty($query)) {
-        setSessionArray($data); 
-        // if(checkSessionData()) { $data = getSessionData(); } 
-    }
-
-    if(checkSessionData()) { $data = getSessionData(); } 
-    //print_r($data);
-}
-
-if(!empty($_POST)){ //ส่ง
-    // print_r($excute);
-    //SUPPLIERSHORTNAME
-     
-       
- 
-        // $FACTORYCODE = isset($_POST['FACTORYCODE']) ? $_POST['FACTORYCODE']:'';     
-        // $excute = $javaFunc->SetBranch($FACTORYCODE);
-        // if(!empty($excute)){
-        //  $tdata[] = array('FACTORYCODE' => $excute['FACTORYCODE']); 
-        // }
- 
-        
-        // $FACTORYCODE = isset($_POST['FACTORYCODE']) ? $_POST['FACTORYCODE']:'';
-        // $SUPPLIERADD01 = isset($_POST['SUPPLIERADD01']) ? $_POST['SUPPLIERADD01']:'';
-        // $excute = $javaFunc->ChkBranch($FACTORYCODE,$SUPPLIERADD01);
-        // if(!empty($excute)){
-        //  $tdata[] = array('FACTORYCODE' => $excute['FACTORYCODE'],
-        //  'SUPPLIERADD01' => $excute['SUPPLIERADD01']); 
-        // }       
-        
-     } 
-
-
-
-
-if (isset($_POST['action'])) {
-    if ($_POST['action'] == "unsetsession") { unsetSessionData(); }
-    if ($_POST['action'] == "keepdata") { setOldValue(); }
-    if ($_POST['action'] == "insert") { insert(); }
-    if ($_POST['action'] == "update") { update(); }
-    if ($_POST['action'] == "delete") { delete(); }
-   // if ($_POST['action'] == "getGMap") { getGMaps(); }
-   // if ($_POST['action'] == "chacki") { chacki(); }
-    if ($_POST['action'] == "delete") { delete(); }
-}
-// if (isset($_POST['insert'])) { insert(); }
-// if (isset($_POST['update'])) { update(); }
-// if (isset($_POST['delete'])) { delete(); }
-
-
-
-$syspvl = getSystemData($_SESSION['APPCODE']."_PVL");
+// ------------------------- CALL Langauge AND Privilege -------------------//
+$syspvl = getSystemData($_SESSION['APPCODE'].'_PVL');
 if(empty($syspvl)) {
     $syspvl = $syslogic->setPrivilege($_SESSION['APPCODE']);
-    setSystemData($_SESSION['APPCODE']."_PVL", $syspvl);
+    setSystemData($_SESSION['APPCODE'].'_PVL', $syspvl);
 }
 $data['SYSPVL'] = $syspvl;
+$loadApp = getSystemData($_SESSION['APPCODE']);
 if(empty($loadApp)) {
     $syslogic->ProgramRundelete($_SESSION['APPCODE']);
     $loadApp = $syslogic->getLoadApp($_SESSION['APPCODE']);
     setSystemData($_SESSION['APPCODE'], $loadApp);
 }
-$loadevent = getSystemData($_SESSION['APPCODE']."_EVENT");
-if(empty($loadevent)) {
-    $loadevent = $syslogic->loadEvent($_SESSION['APPCODE']);
-    setSystemData($_SESSION['APPCODE']."_EVENT", $loadevent);
-}
-
+// $load = getSystemData($_SESSION['APPCODE'].'LOAD');
+// if(empty($load)) {
+//     $load = $javaFunc->load();
+//     setSystemData($_SESSION['APPCODE'].'LOAD', $load);
+// }
 $data['TXTLANG'] = get_sys_lang($loadApp);
 $data['DRPLANG'] = get_sys_dropdown($loadApp);
-$kbnbranch = $data['DRPLANG']['BRANCH_KBN'];
-$bkacctype= $data['DRPLANG']['BK_ACC_TYPE'];
-$roun_d1 = $data['DRPLANG']['ROUND'];
-$roun_d2 = $data['DRPLANG']['ROUND'];
-$roun_d3 = $data['DRPLANG']['ROUND'];
-// print_r($roun_d1);
+$ROUND = $data['DRPLANG']['ROUND'];
+$BRANCH_KBN = $data['DRPLANG']['BRANCH_KBN'];
+$BK_ACC_TYPE= $data['DRPLANG']['BK_ACC_TYPE'];
 // print_r($data['SYSPVL']);
+// echo '<pre>';
+// print_r($data['TXTLANG']);
+// echo '</pre>';
+// echo '<pre>';
+// print_r($data['DRPLANG']);
+// echo '</pre>';
+// echo '<pre>';
+// print_r($load);
+// echo '</pre>';
+// --------------------------------------------------------------------------//
 
+function getSupplier() {
+    $javafunc = new SupplierMaster;
+    $SUPPLIERCD = isset($_POST['SUPPLIERCD']) ? $_POST['SUPPLIERCD']: '';
+    $query = $javafunc->getSupplier($SUPPLIERCD);
+    if(!empty($query)) { setSessionArray($query); }
+    echo json_encode($query);
+}  
 
+function chack_l() {
+    $javafunc = new SupplierMaster;
+    $SUPPLIERSHORTNAME = isset($_POST['SUPPLIERSHORTNAME']) ? $_POST['SUPPLIERSHORTNAME']: '';
+    $query = $javafunc->chack_l($SUPPLIERSHORTNAME);
+    if(!empty($query)) { setSessionArray($query); }
+    echo json_encode($query);
+}  
 
+function ChkBranch() {
+    $javafunc = new SupplierMaster;
+    $FACTORYCODE = isset($_POST['FACTORYCODE']) ? $_POST['FACTORYCODE']: '';
+    $SUPPLIERADD01 = isset($_POST['SUPPLIERADD01']) ? $_POST['SUPPLIERADD01']: '';
+    $query = $javafunc->ChkBranch($FACTORYCODE, $SUPPLIERADD01);
+    if(!empty($query)) { setSessionArray($query); }
+    echo json_encode($query);
+}  
 
+function SetBranch() {
+    $javafunc = new SupplierMaster;
+    $FACTORYCODE = isset($_POST['FACTORYCODE']) ? $_POST['FACTORYCODE']: '';
+    $query = $javafunc->SetBranch($FACTORYCODE);
+    if(!empty($query)) { setSessionArray($query); }
+    echo json_encode($query);
+}  
 
+function getCity() {
+    $javafunc = new SupplierMaster;
+    $CITYCD = isset($_POST['CITYCD']) ? $_POST['CITYCD']: '';
+    $STATECD = isset($_POST['STATECD']) ? $_POST['STATECD']: '';
+    $COUNTRYCD = isset($_POST['COUNTRYCD']) ? $_POST['COUNTRYCD']: '';
+    $query = $javafunc->getCity($COUNTRYCD, $STATECD, $CITYCD);
+    if(!empty($query)) { setSessionArray($query); }
+    echo json_encode($query);
+}
 
+function getGMap() {
+    $javafunc = new SupplierMaster;
+    $SUPPLIERADDR1 = isset($_POST['SUPPLIERADDR1']) ? $_POST['SUPPLIERADDR1']: '';
+    $SUPPLIERADDR2 = isset($_POST['SUPPLIERADDR2']) ? $_POST['SUPPLIERADDR2']: '';
+    $SUPPLIERZIPCODE = isset($_POST['SUPPLIERZIPCODE']) ? $_POST['SUPPLIERZIPCODE']: '';
+    $query = $javafunc->getGMap($SUPPLIERADDR1, $SUPPLIERADDR2, $SUPPLIERZIPCODE);
+    if(!empty($query)) { setSessionArray($query); }
+    echo json_encode($query);
+}
 
+function getBillSupplier() {
+    $javafunc = new SupplierMaster;
+    $SUPBILLCD = isset($_POST['SUPBILLCD']) ? $_POST['SUPBILLCD']: '';
+    $query = $javafunc->getBillSupplier($SUPBILLCD);
+    if(!empty($query)) { setSessionArray($query); }
+    echo json_encode($query);
+}  
 
+function getCurrency() {
+    $javafunc = new SupplierMaster;
+    $CURRENCYCD = isset($_POST['CURRENCYCD']) ? $_POST['CURRENCYCD']: '';
+    $query = $javafunc->getCurrency($CURRENCYCD);
+    if(!empty($query)) { setSessionArray($query); }
+    echo json_encode($query);
+}  
 
 function insert() {
     $javaInsrt = new SupplierMaster;
- 
-    $param = array("SUPPLIERCD" => $_POST['SUPPLIERCD'],
-                    "SUPPLIERNAME" => $_POST['SUPPLIERNAME'],
-                    "SUPPLIERSHORTNAME" => $_POST['SUPPLIERSHORTNAME'],
-                    "SUPPLIERSEARCH" => $_POST['SUPPLIERSEARCH'],
-                    "SUPPLIERZIPCODE" => $_POST['SUPPLIERZIPCODE'],
-                    "SUPPLIERADDR1" => $_POST['SUPPLIERADDR1'],
-                    "SUPPLIERADDR2" => $_POST['SUPPLIERADDR2'],
-                    "SUPPLIERTEL" => $_POST['SUPPLIERTEL'],
-                    "SUPPLIERFAX" => $_POST['SUPPLIERFAX'],
-                    "SUPPLIEREMAIL" => $_POST['SUPPLIEREMAIL'],
-                    "SUPPLIERCONTACT" => $_POST['SUPPLIERCONTACT'],
-                    "BANKNAME" => $_POST['BANKNAME'],
-                    "BRANCHNAME" => $_POST['BRANCHNAME'],
-                    "DIRECTCD" => '',
-                    "COUNTRYCD" => $_POST['COUNTRYCD'],
-                    "STATECD" => $_POST['STATECD'],
-                    "CITYCD" => $_POST['CITYCD'],
-                    "SUPPLIERPWD" => '',
-                    "SUPPLIERTRANSPORTTYP" => '',
-                    "SUPPLIERAFFILIATEFLG" => $_POST['SUPPLIERAFFILIATEFLG'],
-                    "SUPPLIERCREDITLIMIT" => '',
-                    "SUPPLIERCLOSEDAY" => $_POST['SUPPLIERCLOSEDAY'],
-                    "SUPPLIERTAXROUNDTYP" => $_POST['SUPPLIERTAXROUNDTYP'],
-                    "SUPPLIERTAXTYP" => $_POST['SUPPLIERTAXTYP'],
-                    "SUPPLIERTAXRATE" => $_POST['SUPPLIERTAXRATE'],
-                    "CURRENCYCD" => $_POST['CURRENCYCD'],
-                    "STAFFCD" => '',
-                    "SUPBILLCD" => $_POST['SUPBILLCD'],
-                    "SUPPLIEREDITYP" => '',
-                    "SUPPLIERREGDT" => str_replace("-", "", $_POST['SUPPLIERREGDT']),                   
-                    "SUPPLIERADD01" => $_POST['SUPPLIERADD01'],                    
-                    "SUPPLIERRECDAY" => $_POST['SUPPLIERRECDAY'],
-                    "SUPPLIEROFFFLG" => $_POST['SUPPLIEROFFFLG'],
-                    "SUPPLIERTRANSFERFLG" => '',
-                    "BANKCD" => '',
-                    "BRANCHCD" => '',
-                    "SUPPLIERBKACCTYP" => $_POST['SUPPLIERBKACCTYP'],
-                    "SUPPLIERBKACCNO" => $_POST['SUPPLIERBKACCNO'],
-                    "SUPPLIERBKACCNAME" => $_POST['SUPPLIERBKACCNAME'],
-                    "SUPPLIERREMARK" => $_POST['SUPPLIERREMARK'],
-                    "SUPPLIERUNITROUNDTYP" => $_POST['SUPPLIERUNITROUNDTYP'],
-                    "SUPPLIERAMTROUNDTYP" => $_POST['SUPPLIERAMTROUNDTYP'],
-                    "FACTORYCODE" => $_POST['FACTORYCODE']
-                                 
-                );
-       
-       //print_r($param);
-      $insert = $javaInsrt->insSupplier($param);
-      // echo json_encode($insert);
-      unsetSessionData();
+    $param = array( 'SUPPLIERCD' => $_POST['SUPPLIERCD'],
+                    'SUPPLIERNAME' => isset($_POST['SUPPLIERNAME']) ? $_POST['SUPPLIERNAME']: '',
+                    'SUPPLIERSHORTNAME' => isset($_POST['SUPPLIERSHORTNAME']) ? $_POST['SUPPLIERSHORTNAME']: '',
+                    'SUPPLIERSEARCH' => isset($_POST['SUPPLIERSEARCH']) ? $_POST['SUPPLIERSEARCH']: '',
+                    'SUPPLIERZIPCODE' => isset($_POST['SUPPLIERZIPCODE']) ? $_POST['SUPPLIERZIPCODE']: '',
+                    'SUPPLIERADDR1' => isset($_POST['SUPPLIERADDR1']) ? $_POST['SUPPLIERADDR1']: '',
+                    'SUPPLIERADDR2' => isset($_POST['SUPPLIERADDR2']) ? $_POST['SUPPLIERADDR2']: '',
+                    'SUPPLIERTEL' => isset($_POST['SUPPLIERTEL']) ? $_POST['SUPPLIERTEL']: '',
+                    'SUPPLIERFAX' => isset($_POST['SUPPLIERFAX']) ? $_POST['SUPPLIERFAX']: '',
+                    'SUPPLIEREMAIL' => isset($_POST['SUPLIERPEMAIL']) ? $_POST['SUPLIERPEMAIL']: '',
+                    'SUPPLIERCONTACT' => isset($_POST['SUPPLIERCONTACT']) ? $_POST['SUPPLIERCONTACT']: '',
+                    'DIRECTCD' => isset($_POST['DIRECTCD']) ? $_POST['DIRECTCD']: '',
+                    'SUPPLIERPWD' => isset($_POST['DIRECTCD']) ? $_POST['DIRECTCD']: '',
+                    'SUPPLIERTRANSPORTTYP' => isset($_POST['SUPPLIERTRANSPORTTYP']) ? $_POST['SUPPLIERTRANSPORTTYP']: '',
+                    'SUPPLIERAFFILIATEFLG' => isset($_POST['SUPPLIERAFFILIATEFLG']) ? $_POST['SUPPLIERAFFILIATEFLG']: 'F',
+                    'SUPPLIERCREDITLIMIT' => isset($_POST['SUPPLIERCREDITLIMIT']) ? $_POST['SUPPLIERCREDITLIMIT']: '',
+                    'SUPPLIERCLOSEDAY' => isset($_POST['SUPPLIERCLOSEDAY']) ? $_POST['SUPPLIERCLOSEDAY']: '',
+                    'SUPPLIERAMTROUNDTYP' => isset($_POST['SUPPLIERAMTROUNDTYP']) ? $_POST['SUPPLIERAMTROUNDTYP']: '',
+                    'SUPPLIERTAXTYP' => isset($_POST['SUPPLIERTAXTYP']) ? $_POST['SUPPLIERTAXTYP']: '',
+                    'SUPPLIERTAXROUNDTYP' => isset($_POST['SUPPLIERTAXROUNDTYP']) ? $_POST['SUPPLIERTAXROUNDTYP']: '',
+                    'SUPPLIERTAXRATE' => isset($_POST['SUPPLIERTAXRATE']) ? $_POST['SUPPLIERTAXRATE']: '',
+                    'CURRENCYCD' => isset($_POST['CURRENCYCD']) ? $_POST['CURRENCYCD']: '',
+                    'STAFFCD' => isset($_POST['STAFFCD']) ? $_POST['STAFFCD']: '',
+                    'SUPBILLCD' => isset($_POST['SUPBILLCD']) ? $_POST['SUPBILLCD']: '',
+                    'SUPPLIEREDITYP' => isset($_POST['SUPPLIEREDITYP']) ? $_POST['SUPPLIEREDITYP']: '',
+                    'SUPPLIERREGDT' => !empty($_POST['SUPPLIERREGDT']) ? str_replace('-', '', $_POST['SUPPLIERREGDT']): '',                 
+                    'SUPPLIERRECDAY' => isset($_POST['SUPPLIERRECDAY']) ? $_POST['SUPPLIERRECDAY']: '',
+                    'SUPPLIEROFFFLG' => isset($_POST['SUPPLIEROFFFLG']) ? $_POST['SUPPLIEROFFFLG']: 'F',
+                    'SUPPLIERTRANSFERFLG' => isset($_POST['SUPPLIERTRANSFERFLG']) ? $_POST['SUPPLIERTRANSFERFLG']: 'F',
+                    'BANKBRANCHCD' => isset($_POST['BANKBRANCHCD']) ? $_POST['BANKBRANCHCD']: '',
+                    'SUPPLIERBKACCTYP' => isset($_POST['SUPPLIERBKACCTYP']) ? $_POST['SUPPLIERBKACCTYP']: '',
+                    'SUPPLIERBKACCNO' => isset($_POST['SUPPLIERBKACCNO']) ? $_POST['SUPPLIERBKACCNO']: '',
+                    'SUPPLIERBKACCNAME' => isset($_POST['SUPPLIERBKACCNAME']) ? $_POST['SUPPLIERBKACCNAME']: '',
+                    'SUPPLIERREMARK' => isset($_POST['SUPPLIERREMARK']) ? $_POST['SUPPLIERREMARK']: '',
+                    'SUPPLIERUNITROUNDTYP' => isset($_POST['SUPPLIERUNITROUNDTYP']) ? $_POST['SUPPLIERUNITROUNDTYP']: '',
+                    'FACTORYCODE' => isset($_POST['FACTORYCODE']) ? $_POST['FACTORYCODE']: '',
+                    'COUNTRYCD' => isset($_POST['COUNTRYCD']) ? $_POST['COUNTRYCD']: '',
+                    'STATECD' => isset($_POST['STATECD']) ? $_POST['STATECD']: '',
+                    'CITYCD' => isset($_POST['CITYCD']) ? $_POST['CITYCD']: '',
+                    'SUPPLIERADD01' => isset($_POST['SUPPLIERADD01']) ? $_POST['SUPPLIERADD01']: '', 
+                    'BANKNAME' => isset($_POST['BANKNAME']) ? $_POST['BANKNAME']: '',
+                    'BRANCHNAME' => isset($_POST['BRANCHNAME']) ? $_POST['BRANCHNAME']: '');
+        // print_r($param);
+        $insert = $javaInsrt->insSup($param);
+        unsetSessionData();
+        echo json_encode($delete);
 }
 
 function update() {
     $javaUpd = new SupplierMaster;
-    $param = array("SUPPLIERCD" => $_POST['SUPPLIERCD'],
-    "SUPPLIERNAME" => $_POST['SUPPLIERNAME'],
-    "SUPPLIERSHORTNAME" => $_POST['SUPPLIERSHORTNAME'],
-    "SUPPLIERSEARCH" => $_POST['SUPPLIERSEARCH'],
-    "SUPPLIERZIPCODE" => $_POST['SUPPLIERZIPCODE'],
-    "SUPPLIERADDR1" => $_POST['SUPPLIERADDR1'],
-    "SUPPLIERADDR2" => $_POST['SUPPLIERADDR2'],
-    "SUPPLIERTEL" => $_POST['SUPPLIERTEL'],
-    "SUPPLIERFAX" => $_POST['SUPPLIERFAX'],
-    "SUPPLIEREMAIL" => $_POST['SUPPLIEREMAIL'],
-    "SUPPLIERCONTACT" => $_POST['SUPPLIERCONTACT'],
-    "BANKNAME" => $_POST['BANKNAME'],
-    "BRANCHNAME" => $_POST['BRANCHNAME'],
-    "DIRECTCD" => '',
-    "COUNTRYCD" => $_POST['COUNTRYCD'],
-    "STATECD" => $_POST['STATECD'],
-    "CITYCD" => $_POST['CITYCD'],
-    "SUPPLIERPWD" => '',
-    "SUPPLIERTRANSPORTTYP" => '',
-    "SUPPLIERAFFILIATEFLG" => $_POST['SUPPLIERAFFILIATEFLG'],
-    "SUPPLIERCREDITLIMIT" => '',
-    "SUPPLIERCLOSEDAY" => $_POST['SUPPLIERCLOSEDAY'],
-    "SUPPLIERTAXROUNDTYP" => $_POST['SUPPLIERTAXROUNDTYP'],
-    "SUPPLIERTAXTYP" => $_POST['SUPPLIERTAXTYP'],
-    "SUPPLIERTAXRATE" => $_POST['SUPPLIERTAXRATE'],
-    "CURRENCYCD" => $_POST['CURRENCYCD'],
-    "STAFFCD" => '',
-    "SUPBILLCD" => $_POST['SUPBILLCD'],
-    "SUPPLIEREDITYP" => '',
-    "SUPPLIERREGDT" => str_replace("-", "", $_POST['SUPPLIERREGDT']),
-    "SUPPLIERADD01" => $_POST['SUPPLIERADD01'],                    
-    "SUPPLIERRECDAY" => $_POST['SUPPLIERRECDAY'],
-    "SUPPLIEROFFFLG" => $_POST['SUPPLIEROFFFLG'],
-    "SUPPLIERTRANSFERFLG" => '',
-    "BANKCD" => '',
-    "BRANCHCD" => '',
-    "SUPPLIERBKACCTYP" => $_POST['SUPPLIERBKACCTYP'],
-    "SUPPLIERBKACCNO" => $_POST['SUPPLIERBKACCNO'],
-    "SUPPLIERBKACCNAME" => $_POST['SUPPLIERBKACCNAME'],
-    "SUPPLIERREMARK" => $_POST['SUPPLIERREMARK'],
-    "SUPPLIERUNITROUNDTYP" => $_POST['SUPPLIERUNITROUNDTYP'],
-    "SUPPLIERAMTROUNDTYP" => $_POST['SUPPLIERAMTROUNDTYP'],
-    "FACTORYCODE" => $_POST['FACTORYCODE']);              
-                
-                
-             //   print_r($_POST['SupplierREGDT']);
-    $update = $javaUpd->updSupplier($param);
-//    echo json_encode($update);
-     unsetSessionData();
+    $param = array( 'SUPPLIERCD' => $_POST['SUPPLIERCD'],
+                    'SUPPLIERNAME' => isset($_POST['SUPPLIERNAME']) ? $_POST['SUPPLIERNAME']: '',
+                    'SUPPLIERSHORTNAME' => isset($_POST['SUPPLIERSHORTNAME']) ? $_POST['SUPPLIERSHORTNAME']: '',
+                    'SUPPLIERSEARCH' => isset($_POST['SUPPLIERSEARCH']) ? $_POST['SUPPLIERSEARCH']: '',
+                    'SUPPLIERZIPCODE' => isset($_POST['SUPPLIERZIPCODE']) ? $_POST['SUPPLIERZIPCODE']: '',
+                    'SUPPLIERADDR1' => isset($_POST['SUPPLIERADDR1']) ? $_POST['SUPPLIERADDR1']: '',
+                    'SUPPLIERADDR2' => isset($_POST['SUPPLIERADDR2']) ? $_POST['SUPPLIERADDR2']: '',
+                    'SUPPLIERTEL' => isset($_POST['SUPPLIERTEL']) ? $_POST['SUPPLIERTEL']: '',
+                    'SUPPLIERFAX' => isset($_POST['SUPPLIERFAX']) ? $_POST['SUPPLIERFAX']: '',
+                    'SUPPLIEREMAIL' => isset($_POST['SUPLIERPEMAIL']) ? $_POST['SUPLIERPEMAIL']: '',
+                    'SUPPLIERCONTACT' => isset($_POST['SUPPLIERCONTACT']) ? $_POST['SUPPLIERCONTACT']: '',
+                    'DIRECTCD' => isset($_POST['DIRECTCD']) ? $_POST['DIRECTCD']: '',
+                    'SUPPLIERPWD' => isset($_POST['DIRECTCD']) ? $_POST['DIRECTCD']: '',
+                    'SUPPLIERTRANSPORTTYP' => isset($_POST['SUPPLIERTRANSPORTTYP']) ? $_POST['SUPPLIERTRANSPORTTYP']: '',
+                    'SUPPLIERAFFILIATEFLG' => isset($_POST['SUPPLIERAFFILIATEFLG']) ? $_POST['SUPPLIERAFFILIATEFLG']: 'F',
+                    'SUPPLIERCREDITLIMIT' => isset($_POST['SUPPLIERCREDITLIMIT']) ? $_POST['SUPPLIERCREDITLIMIT']: '',
+                    'SUPPLIERCLOSEDAY' => isset($_POST['SUPPLIERCLOSEDAY']) ? $_POST['SUPPLIERCLOSEDAY']: '',
+                    'SUPPLIERAMTROUNDTYP' => isset($_POST['SUPPLIERAMTROUNDTYP']) ? $_POST['SUPPLIERAMTROUNDTYP']: '',
+                    'SUPPLIERTAXTYP' => isset($_POST['SUPPLIERTAXTYP']) ? $_POST['SUPPLIERTAXTYP']: '',
+                    'SUPPLIERTAXROUNDTYP' => isset($_POST['SUPPLIERTAXROUNDTYP']) ? $_POST['SUPPLIERTAXROUNDTYP']: '',
+                    'SUPPLIERTAXRATE' => isset($_POST['SUPPLIERTAXRATE']) ? $_POST['SUPPLIERTAXRATE']: '',
+                    'CURRENCYCD' => isset($_POST['CURRENCYCD']) ? $_POST['CURRENCYCD']: '',
+                    'STAFFCD' => isset($_POST['STAFFCD']) ? $_POST['STAFFCD']: '',
+                    'SUPBILLCD' => isset($_POST['SUPBILLCD']) ? $_POST['SUPBILLCD']: '',
+                    'SUPPLIEREDITYP' => isset($_POST['SUPPLIEREDITYP']) ? $_POST['SUPPLIEREDITYP']: '',
+                    'SUPPLIERREGDT' => !empty($_POST['SUPPLIERREGDT']) ? str_replace('-', '', $_POST['SUPPLIERREGDT']): '',                 
+                    'SUPPLIERRECDAY' => isset($_POST['SUPPLIERRECDAY']) ? $_POST['SUPPLIERRECDAY']: '',
+                    'SUPPLIEROFFFLG' => isset($_POST['SUPPLIEROFFFLG']) ? $_POST['SUPPLIEROFFFLG']: 'F',
+                    'SUPPLIERTRANSFERFLG' => isset($_POST['SUPPLIERTRANSFERFLG']) ? $_POST['SUPPLIERTRANSFERFLG']: 'F',
+                    'BANKBRANCHCD' => isset($_POST['BANKBRANCHCD']) ? $_POST['BANKBRANCHCD']: '',
+                    'SUPPLIERBKACCTYP' => isset($_POST['SUPPLIERBKACCTYP']) ? $_POST['SUPPLIERBKACCTYP']: '',
+                    'SUPPLIERBKACCNO' => isset($_POST['SUPPLIERBKACCNO']) ? $_POST['SUPPLIERBKACCNO']: '',
+                    'SUPPLIERBKACCNAME' => isset($_POST['SUPPLIERBKACCNAME']) ? $_POST['SUPPLIERBKACCNAME']: '',
+                    'SUPPLIERREMARK' => isset($_POST['SUPPLIERREMARK']) ? $_POST['SUPPLIERREMARK']: '',
+                    'SUPPLIERUNITROUNDTYP' => isset($_POST['SUPPLIERUNITROUNDTYP']) ? $_POST['SUPPLIERUNITROUNDTYP']: '',
+                    'FACTORYCODE' => isset($_POST['FACTORYCODE']) ? $_POST['FACTORYCODE']: '',
+                    'COUNTRYCD' => isset($_POST['COUNTRYCD']) ? $_POST['COUNTRYCD']: '',
+                    'STATECD' => isset($_POST['STATECD']) ? $_POST['STATECD']: '',
+                    'CITYCD' => isset($_POST['CITYCD']) ? $_POST['CITYCD']: '',
+                    'SUPPLIERADD01' => isset($_POST['SUPPLIERADD01']) ? $_POST['SUPPLIERADD01']: '', 
+                    'BANKNAME' => isset($_POST['BANKNAME']) ? $_POST['BANKNAME']: '',
+                    'BRANCHNAME' => isset($_POST['BRANCHNAME']) ? $_POST['BRANCHNAME']: '');      
+    // print_r($param);
+    $update = $javaUpd->updSup($param);
+    unsetSessionData();
+    echo json_encode($delete);
 }
 
 function delete() {
     $delfunc = new SupplierMaster;
-    $delete = $delfunc->delSupplier($_POST['SUPPLIERCD']);
-    // echo json_encode($delete);
+    $SUPPLIERCD = isset($_POST['SUPPLIERCD']) ? $_POST['SUPPLIERCD']: '';
+    $delete = $delfunc->delSup($SUPPLIERCD);
     unsetSessionData();
+    echo json_encode($delete);
 }
-
-// function chacki() {
-    
-//     $javaFunc = new SupplierMaster;
-//     $SUPPLIERSHORTNAME = isset($_POST['SUPPLIERSHORTNAME']) ? $_POST['SUPPLIERSHORTNAME']:'';     
-//     $excute = $javaFunc->chack_l($SUPPLIERSHORTNAME);
-//     if(!empty($excute)){
-//      $tdata[] = array('SUPPLIERSHORTNAME' => $excute['SUPPLIERSHORTNAME']); 
-//     }
-// print_r($excute);
-  
-// }
-
-function getGMaps() {
-    
-    $javaFunc = new SupplierMaster;
-    $SUPPLIERADDR1 = isset($_POST['SUPPLIERADDR1']) ? $_POST['SUPPLIERADDR1']:'';
-    $SUPPLIERADDR2 = isset($_POST['SUPPLIERADDR2']) ? $_POST['SUPPLIERADDR2']:'';
-    $SUPPLIERZIPCODE = isset($_POST['SUPPLIERZIPCODE']) ? $_POST['SUPPLIERZIPCODE']:'';     
-    $excute = $javaFunc->getGMap($SUPPLIERADDR1,$SUPPLIERADDR2,$SUPPLIERZIPCODE);
-    if(!empty($excute)){
-     $tdata[] = array('SUPPLIERADDR1' => $excute['SUPPLIERADDR1'],
-     'SUPPLIERADDR2' => $excute['SUPPLIERADDR2'],
-     'SUPPLIERZIPCODE' => $excute['SUPPLIERZIPCODE'],); 
-    }
-
-
-  
-}
-
 
 function setOldValue() {
     setSessionArray($_POST); 
@@ -386,14 +333,9 @@ function programDelete() {
         $_SESSION['APPCODE'] = '';
     }
 }
-
+    
 function setSessionArray($arr){
-    $keepField = array( "SUPPLIERCD", "SUPPLIERREGDT", "SUPPLIERNAME", "SUPPLIERSEARCH", "SUPPLIERSHORTNAME", "FACTORYCODE", "SUPPLIERADD01", "COUNTRYCD", "STATECD", "CITYCD", "CITYNAME",
-                        "SUPPLIERZIPCODE", "SUPPLIERADDR1", "SUPPLIERADDR2", "SUPPLIERTEL", "SUPPLIERFAX", "SUPPLIEREMAIL", "SUPPLIERCONTACT", "BANKNAME","BRANCHNAME",
-                        "CURRENCYCD", "SUPPLIERBKACCTYP","SUPPLIERBKACCNO", "SUPPLIERBKACCNAME", "SUPPLIERUNITROUNDTYP","SUPPLIERAMTROUNDTYP", "SUPPLIERTAXROUNDTYP", "SUPBILLCD",
-                        "SUPBILLNAME","SUPPLIERRECDAY","SUPPLIERCLOSEDAY","SUPPLIERREMARK","SUPPLIEROFFFLG","SUPPLIERAFFILIATEFLG"
-                        
-                    );
+    $keepField = array( 'SYSPVL', 'TXTLANG', 'DRPLANG', 'SUPPLIERCD', 'SUPPLIERREGDT', 'SUPPLIERNAME', 'SUPPLIERSEARCH', 'SUPPLIERADDR1', 'SUPPLIERADDR2', 'SUPPLIERZIPCODE', 'SUPPLIERTEL', 'SUPPLIERFAX', 'SUPPLIEREMAIL', 'SUPPLIERCONTACT', 'SUPPLIERSHORTNAME', 'FACTORYCODE', 'SUPPLIERADD01', 'COUNTRYCD', 'STATECD', 'CITYCD', 'CITYNAME', 'SUPPLIERCLOSEDAY','SUPPLIERRECDAY', 'SUPPLIEROFFFLG', 'SUPPLIERAFFILIATEFLG', 'CURRENCYCD', 'SUPPLIERUNITROUNDTYP', 'SUPPLIERAMTROUNDTYP', 'SUPPLIERTAXROUNDTYP', 'SUPBILLCD', 'SUPBILLNAME', 'BANKNAME', 'BRANCHNAME', 'SUPPLIERBKACCTYP', 'SUPPLIERBKACCNO', 'SUPPLIERBKACCNAME' ,'SUPPLIERREMARK', 'CURRENCY', 'DIRECTCD', 'DIRECTNAME', 'SUPPLIERPWD', 'CURRENCYDISP', 'SUPPLIERTAXTYP', 'SUPPLIEREDITYP', 'SUPPLIERTAXRATE', 'SUPPLIERCREDITLIMIT', 'SUPPLIERTRANSPORTTYP', 'SUPPLIERTRANSFERFLG', 'GMAPADR', 'ROWCOUNTER', 'USEFLG', 'INS', 'BANKBRANCHCD');
     foreach($arr as $k => $v){
         if(in_array($k, $keepField)) {
             setSessionData($k, $v);
@@ -401,7 +343,7 @@ function setSessionArray($arr){
     }
 }
 
-function getSessionData($key = "") {
+function getSessionData($key = '') {
     global $systemName;
     return get_sys_data($systemName, $key);
 }
@@ -416,24 +358,35 @@ function checkSessionData() {
     return check_sys_data($systemName);
 }
 
-function unsetSessionData($key = "") {
+function unsetSessionData($key = '') {
     global $systemName;
     $key = empty($key) ? $systemName : $key;
     return unset_sys_data($key);
 }
 
-function getDropdownData($key = "") {
-  return get_sys_data(SESSION_NAME_DROPDOWN, $key);
+function setSessionKey($key, $value) {
+    global $systemName;
+    $_SESSION[$sysnm][$key] = $value;
+}
+
+function getDropdownData($key = '') {
+    return get_sys_data(SESSION_NAME_DROPDOWN, $key);
 }
 
 function setDropdownData($key, $val) {
-  return set_sys_data(SESSION_NAME_DROPDOWN, $key, $val);
+    return set_sys_data(SESSION_NAME_DROPDOWN, $key, $val);
 }
-function getSystemData($key = "") {
+
+function getSystemData($key = '') {
     return get_sys_data(SESSION_NAME_SYSTEM, $key);
-  }
+}
   
-  function setSystemData($key, $val) {
+function setSystemData($key, $val) {
     return set_sys_data(SESSION_NAME_SYSTEM, $key, $val);
-  }
+}
+
+function unsetSessionkey($key) {
+    global $systemName;
+    return unset_sys_key($systemName, $key);
+}
 ?>

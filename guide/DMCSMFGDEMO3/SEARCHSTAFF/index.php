@@ -38,7 +38,6 @@
             </div>
         </div>
 
-
         <div id="table-area" class="overflow-scroll px-2 block h-[280px]">
             <table id="table_result" class="quote_table w-full border-collapse border border-slate-500">
                 <thead class="sticky top-0 z-20 bg-gray-50">

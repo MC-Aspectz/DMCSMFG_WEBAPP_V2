@@ -158,55 +158,39 @@ $yearvalue = $data['DRPLANG']['YEAR'];
 //--------------------------------------------------------------------------------
 if(!empty($_POST)) {
     if (isset($_POST['action'])) {
-        if ($_POST['action'] == "unsetsession") { unsetSessionData(); }
-        if ($_POST['action'] == "programDelete") { programDelete(); }
-        if ($_POST['action'] == "keepdata") { setOldValue(); }
-        if ($_POST['action'] == "keepItemData") { keepItemData(); }
-        if ($_POST['action'] == "unsetItemData") {  unsetItemData($_POST['lineIndex']); }
-        if ($_POST['action'] == "entryUnset") { entryUnset(); }
-        if ($_POST['action'] == "getDiv") { getDiv(); }
-        if ($_POST['action'] == "get_supllier") { get_supllier(); }
-        if ($_POST['action'] == "get_exrate") { get_exrate(); }
-        if ($_POST['action'] == "get_assetn") { get_assetn(); }
-        if ($_POST['action'] == "dc_type") { dc_type(); }
-        if ($_POST['action'] == "get_acc") { get_acc(); }
-        if ($_POST['action'] == "dc_type1") { dc_type1(); }
-        if ($_POST['action'] == "commit") { commit(); }
-        if ($_POST['action'] == "inp_AccTran") { inp_AccTran(); }
+        if ($_POST['action'] == 'unsetsession') { unsetSessionData(); }
+        if ($_POST['action'] == 'programDelete') { programDelete(); }
+        if ($_POST['action'] == 'keepdata') { setOldValue(); }
+        if ($_POST['action'] == 'keepItemData') { keepItemData(); }
+        if ($_POST['action'] == 'unsetItemData') {  unsetItemData($_POST['lineIndex']); }
+        if ($_POST['action'] == 'entryUnset') { entryUnset(); }
+        if ($_POST['action'] == 'DIVISIONCD') { getDiv(); }
+        if ($_POST['action'] == 'SUPPLIERCD') { get_supllier(); }
+        if ($_POST['action'] == 'ASSETACC') { get_assetn(); }
+        if ($_POST['action'] == 'ACC_CD') { get_acc(); }
+        if ($_POST['action'] == 'get_exrate') { get_exrate(); }
+        if ($_POST['action'] == 'dc_type') { dc_type(); }
+        if ($_POST['action'] == 'dc_type1') { dc_type1(); }
+        if ($_POST['action'] == 'commit') { commit(); }
+        if ($_POST['action'] == 'inp_AccTran') { inp_AccTran(); }
 
     }
 }
 //--------------------------------------------------------------------------------
 function getDiv() {
     $getfunc = new AccBOKEntry10;
-    if(isset($_GET['DIVISIONCD'])) {
-        $DIVISIONCD = isset($_GET['DIVISIONCD']) ? $_GET['DIVISIONCD']: '';
-    } else {
-        $DIVISIONCD = isset($_POST['DIVISIONCD']) ? $_POST['DIVISIONCD']: '';   
-    }
+    $DIVISIONCD = isset($_POST['DIVISIONCD']) ? $_POST['DIVISIONCD']: '';   
     $query = $getfunc->getDiv($DIVISIONCD);
     if(!empty($query)) { setSessionArray($query); }
-    if(isset($_GET['divisioncd'])) {
-        return json_encode($query);
-    } else {
-        echo json_encode($query);
-    }
+    echo json_encode($query);
 }
 
 function get_supllier() {
     $getfunc = new AccBOKEntry10;
-    if(isset($_GET['SUPPLIERCD'])) {
-        $SUPPLIERCD = isset($_GET['SUPPLIERCD']) ? $_GET['SUPPLIERCD']: '';
-    } else {
-        $SUPPLIERCD = isset($_POST['SUPPLIERCD']) ? $_POST['SUPPLIERCD']: '';   
-    }
+    $SUPPLIERCD = isset($_POST['SUPPLIERCD']) ? $_POST['SUPPLIERCD']: '';   
     $query = $getfunc->get_supllier($SUPPLIERCD);
     if(!empty($query)) { $query['SUPPLIERCD'] = $SUPPLIERCD; setSessionArray($query); }
-    if(isset($_GET['suppliercd'])) {
-        return json_encode($query);
-    } else {
-        echo json_encode($query);
-    }
+    echo json_encode($query);
 }
 
 function get_exrate() {
@@ -219,18 +203,20 @@ function get_exrate() {
 
 function get_assetn() {
     $getfunc = new AccBOKEntry10;
-    if(isset($_GET['ASSETACC'])) {
-        $ASSETACC = isset($_GET['ASSETACC']) ? $_GET['ASSETACC']: '';
-    } else {
-        $ASSETACC = isset($_POST['ASSETACC']) ? $_POST['ASSETACC']: '';  
-    }
+    $ASSETACC = isset($_POST['ASSETACC']) ? $_POST['ASSETACC']: '';  
     $query = $getfunc->get_assetn($ASSETACC);
     if(!empty($query)) { $query['ASSETACC'] = $ASSETACC; setSessionArray($query); }
-    if(isset($_GET['ASSETACC'])) {
-        return json_encode($query);
-    } else {
-        echo json_encode($query);
-    }
+    echo json_encode($query);
+}
+
+function get_acc() {
+    $data = getSessionData();
+    $accfunc = new AccBOKEntry10;
+    $ACC_CD = isset($_POST['ACC_CD']) ? $_POST['ACC_CD']: '';   
+    $DC_TYPE = isset($_POST['DC_TYPE']) ? $_POST['DC_TYPE']: '';
+    $query = $accfunc->get_acc($ACC_CD, $DC_TYPE);
+    if(!empty($query)) { setSessionArray($query); }
+    echo json_encode($query);
 }
 
 function dc_type() {
@@ -239,30 +225,6 @@ function dc_type() {
     $ACC_CD = isset($_POST['ACC_CD']) ? $_POST['ACC_CD']: '';   
     $query = $getfunc->dc_type($DC_TYPE, $ACC_CD);
     echo json_encode($query);
-}
-
-function get_acc() {
-    $data = getSessionData();
-    $accfunc = new AccBOKEntry10;
-    if(isset($_GET['ACCCD'])) {
-        $ACC_CD = isset($_GET['ACCCD']) ? $_GET['ACCCD']: '';
-    } else {
-        $ACC_CD = isset($_POST['ACC_CD']) ? $_POST['ACC_CD']: '';   
-    }
-    $DC_TYPE = isset($_POST['DC_TYPE']) ? $_POST['DC_TYPE']: '';
-    $query = $accfunc->get_acc($ACC_CD, $DC_TYPE);
-    if(!empty($query)) {
-        if(isset($_GET['ACCCD'])) {
-            if (!is_array($query) && str_contains($query, 'ERRO:')) {
-                return json_encode($query);
-            } else {
-                setSessionArray($query);
-                return json_encode($query);
-            }
-        } else {
-            echo json_encode($query);
-        }
-    }
 }
 
 function dc_type1() {

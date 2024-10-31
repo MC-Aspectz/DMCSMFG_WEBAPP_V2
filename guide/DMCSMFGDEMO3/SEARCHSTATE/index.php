@@ -43,48 +43,42 @@
             </div>
         </div>
 
-        <div class="table">
-            <table id="table_result" class="w-full border-collapse border border-slate-500">
-                <thead class="w-full bg-gray-100">
-                    <tr class="flex w-full divide-x csv-row">
-                        <th class="w-5/12 text-left pl-1 csv-col">
+        <div id="table-area" class="overflow-scroll px-2 block h-[280px]">
+            <table id="table_result" class="quote_table w-full border-collapse border border-slate-500">
+                <thead class="sticky top-0 z-20 bg-gray-50">
+                    <tr class="border border-gray-600">
+                        <th class="px-6 text-center border border-slate-700 text-left">
                             <span class="text-color text-sm font-semibold tracking-wide whitespace-nowrap"><?=$lang['statecode']; ?></span>
                         </th>
-                        <th class="w-7/12 text-left pl-1 csv-col">
+                        <th class="px-6 text-center border border-slate-700 text-center">
                             <span class="text-color text-sm font-semibold tracking-wide whitespace-nowrap"><?=$lang['statename']; ?></span>
                         </th>
                     </tr>
                 </thead>
-                <tbody class="flex flex-col overflow-y-scroll w-full h-[250px]"><?php
-                    if (!empty($tdata)) {
-                    $run = 0;
-                    foreach ($tdata as $item) { ?>
-                        <tr class="flex w-full p-0 divide-x csv-row">
-                            <td class="hidden"><?= ++$run; ?></td>
-                            <td class="h-6 w-5/12 text-sm pl-1 csv-col"><?=$item['STATECD'] ?></td>
-                            <td class="h-6 w-7/12 text-sm pl-1 csv-col"><?=$item['STATENAME'] ?></td>
-                        </tr>
-                    <?php }
-                            for ($i = count($tdata)+1; $i <= 10; $i++) { ?>
-                                <tr class="flex w-full p-0 divide-x">
-                                    <td class="h-6 w-5/12"></td>
-                                    <td class="h-6 w-7/12"></td>
-                                </tr>
-                            <?php }
-                    } else {
-                            for ($i = 0; $i < 10; $i++) { ?>
-                        <tr class="flex w-full p-0 divide-x">
-                            <td class="h-6 w-5/12"></td>
-                            <td class="h-6 w-7/12"></td>
-                        </tr><?php }
+                <tbody id="dvwdetail" class="divide-y divide-gray-200"><?php
+                    if (!empty($tdata)) { $minrow = count($tdata);
+                        foreach($tdata as $key => $item) { ?>
+                            <tr class="row-id">
+                                <td class="hidden"><?=$key; ?></td>
+                                <td class="h-6 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['STATECD']) ? $item['STATECD']: '' ?></td>
+                                <td class="h-6 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['STATENAME']) ? $item['STATENAME']: '' ?></td>
+                            </tr><?php 
+                        }
+                    } 
+                    for ($i = $minrow+1; $i <= $maxrow; $i++) { ?>
+                        <tr class="row-empty" id="rowId<?=$i?>">
+                            <td class="h-6 border border-slate-700"></td>
+                            <td class="h-6 border border-slate-700"></td>
+                        </tr><?php
                     } ?>
                 </tbody>
             </table>
-            <div class="flex p-2">
-                <label class="text-color h-6 text-[12px]"><?php echo $lang['rowcount']; ?>  <span id="rowcount" ><?php echo !empty($tdata) ? count($tdata) : 0 ?></span></label>
-            </div>
         </div>
-            
+        
+        <div class="flex p-2">
+            <label class="text-color h-6 text-[12px]"><?=$lang['rowcount']; ?>  <span id="rowcount" ><?=$minrow ?></span></label>
+        </div>
+
         <div class="flex my-2">
             <div class="flex w-7/12">
                 <button type="button" class="btn text-color border-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-1 text-center me-2 mb-2" 

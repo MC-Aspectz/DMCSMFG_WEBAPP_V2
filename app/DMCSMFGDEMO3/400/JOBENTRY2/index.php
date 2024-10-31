@@ -79,7 +79,7 @@
                                                 id="ITEMSPEC" name="ITEMSPEC" value="<?=isset($data['ITEMSPEC']) ? $data['ITEMSPEC']: ''; ?>" readonly/>
                                         <label class="text-color block text-sm w-2/12 pt-1 text-center"><?=checklang('QUANTITY')?></label>
                                         <input type="text" class="text-control text-sm shadow-md border rounded-xl h-7 w-3/12 mr-1 py-2 px-3 text-gray-700 border-gray-300 read"
-                                                id="PROQTY" name="PROQTY" value="<?=!empty($data['PROQTY']) ? number_format($data['PROQTY'], 2): ''; ?>" readonly/>
+                                                id="PROQTY" name="PROQTY" value="<?=!empty($data['PROQTY']) ? number_format(str_replace(',', '', $data['PROQTY']), 2): ''; ?>" readonly/>
                                         <select class="text-control text-sm shadow-md border px-3 h-7 w-2/12 text-left text-[12px] rounded-xl border-gray-300 read"
                                                 id="ITEMUNITTYP" name="ITEMUNITTYP">
                                                 <option value=""></option>
@@ -440,7 +440,7 @@
                                     <div class="flex w-3/12 px-2">
                                         <label class="text-color block text-sm w-6/12 pr-2 pt-1"><?=checklang('COMP_QTY')?></label>
                                         <input type="text" class="text-control text-sm shadow-md border rounded-xl h-7 w-6/12 ml-2 py-2 px-3 text-gray-700 border-gray-300 text-right req"
-                                                id="JOBPROCOMQTY" name="JOBPROCOMQTY" value="<?=!empty($data['JOBPROCOMQTY']) ? number_format($data['JOBPROCOMQTY'], 2): ''; ?>"
+                                                id="JOBPROCOMQTY" name="JOBPROCOMQTY" value="<?=!empty($data['JOBPROCOMQTY']) ? number_format(str_replace(',', '', $data['JOBPROCOMQTY']), 2): ''; ?>"
                                                 onchange="this.value = numberWithComma(this.value); unRequired();" oninput="this.value = stringReplacez(this.value);" required/>
                                     </div>
                                     <div class="flex w-9/12 px-2">

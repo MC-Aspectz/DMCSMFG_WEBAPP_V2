@@ -12,39 +12,29 @@ if (isset($_SESSION['LANG'])) {
     require_once(dirname(__FILE__, 2). '/lang/en.php');
 }
 
-$javaFunc = new CustomerCity;
+$tdata = array();
+$javaFunc = new SearchCity;
+$minrow = 0;
+$maxrow = 10;
 
 $COUNTRYCD = '';
 $STATECD = '';
 $S_CITYNAME = '';
-$tdata = array();
 
-$minrow = 0;
-$maxrow = 10;
-
-if(!empty($_POST)){
-	$COUNTRYCD = isset($_POST['COUNTRYCD']) ? $_POST['COUNTRYCD']:'';
+if(!empty($_POST)) {
+    $COUNTRYCD = isset($_POST['COUNTRYCD']) ? $_POST['COUNTRYCD']:'';
     $STATECD = isset($_POST['STATECD']) ? $_POST['STATECD']:'';
-	$S_CITYNAME = isset($_POST['S_CITYNAME']) ? $_POST['S_CITYNAME']:'';
-           //Syslogic(SearchCity1) COUNTRYCD,STATECD,S_CITYNAME
+    $S_CITYNAME = isset($_POST['S_CITYNAME']) ? $_POST['S_CITYNAME']:'';
 
-       $excute = $javaFunc->searchCity($COUNTRYCD,$STATECD,$S_CITYNAME);
+    $excute = $javaFunc->searchCity($COUNTRYCD,$STATECD,$S_CITYNAME);
 
-       if(!empty($excute)){
+    if(!empty($excute)){
         $tdata =  $excute;
-
-       }
-
+    }
 }
 
 if(!empty($_GET)) {
-
     $COUNTRYCD = isset($_GET['COUNTRYCD']) ? $_GET['COUNTRYCD']:'';
     $STATECD = isset($_GET['STATECD']) ? $_GET['STATECD']:'';
-
 }
-
-
-
-
 ?>

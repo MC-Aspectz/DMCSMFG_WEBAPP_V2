@@ -11,49 +11,28 @@ if (isset($_SESSION['LANG'])) {
     require_once(dirname(__FILE__, 2). '/lang/en.php');
 }
 
-$javaFunc = new CustomerState;
+$tdata = array();
+$javaFunc = new State;
+$minrow = 0;
+$maxrow = 10;
 
 $P1 = '';
 $COUNTRYCD_S = '';
 $STATECD_S = '';
 $STATECD = '';
 $STATENAME ='';
-$tdata = array();
-$minrow = 0;
-$maxrow = 10;
 
 
-if(!empty($_POST)){
-   // print_r($excute);
-
-	
-	$COUNTRYCD_S = isset($_POST['COUNTRYCD_S']) ? $_POST['COUNTRYCD_S']:'';
+if(!empty($_POST)) {
+    $COUNTRYCD_S = isset($_POST['COUNTRYCD_S']) ? $_POST['COUNTRYCD_S']:'';
     $STATECD_S = isset($_POST['STATECD_S']) ? $_POST['STATECD_S']:'';
-    // print_r($_POST['STATECD_S']);
-       // $STATENAME = $_POST['STATENAME'];
-       $excute = $javaFunc->getResult($COUNTRYCD_S,$STATECD_S);
-       if(!empty($excute)){
+    $excute = $javaFunc->getResult($COUNTRYCD_S,$STATECD_S);
+    if(!empty($excute)){
         $tdata = $excute;
-
-       }
-
-
-      	// print_r($excute);
-	} 
-
-
-
-    if(!empty($_GET)) {
-
-        $COUNTRYCD_S = isset($_GET['COUNTRYCD']) ? $_GET['COUNTRYCD']:'';
-
-
-
     }
+} 
 
-
-
-
-
-
+if(!empty($_GET)) {
+    $COUNTRYCD_S = isset($_GET['COUNTRYCD']) ? $_GET['COUNTRYCD']:'';
+}
 ?>

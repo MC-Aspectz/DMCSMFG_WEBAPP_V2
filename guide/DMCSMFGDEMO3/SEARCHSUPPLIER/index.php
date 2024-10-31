@@ -18,8 +18,8 @@
     <input type="hidden" id="routeUrl" name="routeUrl" value="<?=$routeUrl?>">
     <input type="hidden" id="comcd" name="comcd" value="<?=$_SESSION['COMCD']?>">
     <input type="hidden" id="sessionUrl" name="sessionUrl" value="<?=$_SESSION['APPURL']?>">
-    <input type="hidden" id="page" name="page" <?php if(!empty($_GET['page'])){ ?> value="<?=$_GET['page']; ?>" <?php } else { ?> value="" <?php }?>>
-    <input type="hidden" id="index" name="index" <?php if(!empty($_GET['index'])){ ?> value="<?=$_GET['index']; ?>"<?php } else { ?> value="" <?php }?>>
+    <input type="hidden" id="page" name="page" value="<?=!empty($_GET['page']) ? $_GET['page']: ''?>">
+    <input type="hidden" id="index" name="index" value="<?=!empty($_GET['index']) ? $_GET['index']: ''?>">
     <form class="w-full h-screen p-2" method="POST" id="itemsupplier" name="itemsupplier" onkeydown="if(event.keyCode == 13) { event.preventDefault(); return false;}">
         <div class="flex mb-1">
             <div class="flex w-7/12">
@@ -47,51 +47,51 @@
                 </button>
             </div>
         </div>
-    
-        <div class="table">
-            <table id="table_result" class="w-full border-collapse border border-slate-500">
-                <thead class="w-full bg-gray-100">
-                    <tr class="flex w-full divide-x">
-                        <th class="w-1/12 text-center">
+
+        <div id="table-area" class="overflow-scroll px-2 block h-[280px]">
+            <table id="table_result" class="quote_table w-full border-collapse border border-slate-500">
+                <thead class="sticky top-0 z-20 bg-gray-50">
+                    <tr class="border border-gray-600">
+                        <th class="px-6 text-center border border-slate-700 text-left">
                             <span class="text-color text-sm font-semibold tracking-wide whitespace-nowrap"><?=$lang['suppliercd']; ?></span>
                         </th>
-                        <th class="w-3/12 text-center">
+                        <th class="px-6 text-center border border-slate-700 text-center">
                             <span class="text-color text-sm font-semibold tracking-wide whitespace-nowrap"><?=$lang['suppliername']; ?></span>
                         </th>
-                        <th class="w-4/12 text-center">
+                        <th class="px-6 text-center border border-slate-700 text-center">
                             <span class="text-color text-sm font-semibold tracking-wide whitespace-nowrap"><?=$lang['address']; ?></span>
                         </th>
-                         <th class="w-4/12 text-center">
+                        <th class="px-6 text-center border border-slate-700 text-center">
                             <span class="text-color text-sm font-semibold tracking-wide whitespace-nowrap"><?=$lang['address']; ?></span>
                         </th>
                     </tr>
                 </thead>
-                <tbody class="flex flex-col overflow-y-scroll w-full h-[250px]"><?php
-                if (!empty($tdata)) { $run = 0;
-                foreach ($tdata as $item) {  ?>
-                    <tr class="flex w-full p-0 divide-x">
-                        <td class="hidden"><?= ++$run; ?></td>
-                        <td class="h-6 w-1/12 pl-1 text-sm"><?=$item['SUPPLIERCD'] ?></td>
-                        <td class="h-6 w-3/12 pl-1 text-sm"><?=$item['SUPPLIERNAME'] ?></td>
-                        <td class="h-6 w-4/12 pl-1 text-sm"><?=$item['SUPPLIERADDR1'] ?></td>
-                        <td class="h-6 w-4/12 pl-1 text-sm"><?=$item['SUPPLIERADDR2'] ?></td>
-                    </tr><?php 
-                    }
-                }
-                
-                for ($i = 0; $i < 10; $i++) { ?>
-                    <tr class="flex w-full p-0 divide-x">
-                        <td class="h-6 w-1/12"></td>
-                        <td class="h-6 w-3/12"></td>
-                        <td class="h-6 w-4/12"></td>
-                        <td class="h-6 w-4/12"></td>
-                    </tr><?php
-                } ?> 
+                <tbody id="dvwdetail" class="divide-y divide-gray-200"><?php
+                    if (!empty($tdata)) { $minrow = count($tdata);
+                        foreach($tdata as $key => $item) { ?>
+                            <tr class="row-id">
+                                <td class="hidden"><?=$key; ?></td>
+                                <td class="h-6 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['SUPPLIERCD']) ? $item['SUPPLIERCD']: '' ?></td>
+                                <td class="h-6 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['SUPPLIERNAME']) ? $item['SUPPLIERNAME']: '' ?></td>
+                                <td class="h-6 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['SUPPLIERADDR1']) ? $item['SUPPLIERADDR1']: '' ?></td>
+                                <td class="h-6 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['SUPPLIERADDR2']) ? $item['SUPPLIERADDR2']: '' ?></td>
+                            </tr><?php 
+                        }
+                    } 
+                    for ($i = $minrow+1; $i <= $maxrow; $i++) { ?>
+                        <tr class="row-empty" id="rowId<?=$i?>">
+                            <td class="h-6 border border-slate-700"></td>
+                            <td class="h-6 border border-slate-700"></td>
+                            <td class="h-6 border border-slate-700"></td>
+                            <td class="h-6 border border-slate-700"></td>
+                        </tr><?php
+                    } ?>
                 </tbody>
             </table>
-            <div class="flex p-2">
-                <label class="text-color h-6 text-[12px]"><?php echo $lang['rowcount']; ?>  <span id="rowcount" ><?php echo !empty($tdata) ? count($tdata) : 0 ?></span></label>
-            </div>
+        </div>
+
+        <div class="flex p-2">
+            <label class="text-color h-6 text-[12px]"><?=$lang['rowcount']; ?>  <span id="rowcount" ><?=$minrow ?></span></label>
         </div>
 
         <div class="flex my-2">

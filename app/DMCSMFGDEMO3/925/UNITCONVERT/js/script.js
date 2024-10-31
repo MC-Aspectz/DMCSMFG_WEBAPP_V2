@@ -78,6 +78,7 @@ async function action(method) {
         if(response.status == 200) {
             // let result = response.data;
             clearForm(form);
+            return alertSuccess();
         }
     })
     .catch(e => {

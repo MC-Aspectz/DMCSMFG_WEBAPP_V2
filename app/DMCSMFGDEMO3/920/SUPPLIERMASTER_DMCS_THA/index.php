@@ -1,350 +1,421 @@
-<?php 
-    require_once('./function/index_x.php');
-?>
+<?php require_once('./function/index_x.php'); ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title><?=$appname; ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="<?=$_SESSION['APPURL'] . '/css/menu.css'; ?>">
-    <link rel="stylesheet" href="<?=$_SESSION['APPURL'] . '/css/loader.css'; ?>">
-    <link rel="stylesheet" href="<?=$_SESSION['APPURL'] . '/css/bootstrap_523_min.css'; ?>">
     <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="<?=$_SESSION['APPURL'] . '/css/sweetalert2.min.css'; ?>">
-
-    <script src="<?=$_SESSION['APPURL'] . '/js/axios.min.js'; ?>" integrity="sha384-gRiARcqivboba/DerDAENzwUEYP9HCDyPEqVzCulWl85IdmR6r0T1adY/Su0KTfi" crossorigin="anonymous"></script>
-    <script src="<?=$_SESSION['APPURL'] . '/js/jquery_363_min.js'; ?>" integrity="sha384-Ft/vb48LwsAEtgltj7o+6vtS2esTU9PCpDqcXs4OCVQFZu5BqprHtUCZ4kjK+bpE" crossorigin="anonymous"></script>
-    <script src="<?=$_SESSION['APPURL'] . '/js/sweetalert2.min.js'; ?>" integrity="sha384-mngH0dsoMzHJ55nmFSRTjl5pdhgzHDeEoLOuZp2U28VrwCH0ieB9ntimtLbJm9KJ" crossorigin="anonymous"></script>
-    <script src="<?=$_SESSION['APPURL'] . '/js/bootstrap_bundle_523_min.js'; ?>" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-    
-    <title><?php echo $appname; ?></title>
+    <!-- -------------------------------------------------------------------------------- -->
 </head>
 <body>
-    <!-- ---------------------------------------------------------------------------------->
-    <!--  Menu -->
-    <?php doMenu(); ?>
-    <!-- ---------------------------------------------------------------------------------->
-    <div class="container-fluid bg-primary" style="height: auto;">
-        <div class="row justify-content-between">
-            <div class="col-10">
-                <p class="text-white" style="font-size: 1.2em; margin: 5px;"><?php echo $_SESSION['PACKNAME'] . ' > ' . $_SESSION['APPNAME']; ?></p>
-            </div>
-            <div class="col-2 text-end align-middle">
-                <a href="<?php echo $_SESSION['APPURL'] . '/home.php'; ?>">
-                    <!-- <button type="button" class="btn-close btn-close-white" aria-label="Close"></button> -->
-                    <p class="text-white" style="font-size: 1.2em; margin: 5px;">[ <?php echo $lang['close']; ?> ]</p>
-                </a>
-            </div>
-        </div>
-    </div>
-    <!-- -------------------------------------------------------------------------------- -->
-    <input type="hidden" id="sessionUrl" name="sessionUrl" value="<?=$_SESSION['APPURL']?>">
-    <form class="form" method="POST" id="suppliermaster" name="suppliermaster" action="" onkeydown="if(event.keyCode == 13) { event.preventDefault(); return false;}">
-        <div class="col-md-12">
-            <div class="flex">
-                <div class="flex col-first">
-                    <label class="label-width27"><?php echo $data['TXTLANG']['SUPPLIER_CODE']; ?></label>&nbsp;
-                    <input class="width20 req form-control" type="text" id="SUPPLIERCD" name="SUPPLIERCD"  
-                    required  value="<?php echo isset($data['SUPPLIERCD'])?$data['SUPPLIERCD']:''; ?>"  />
-                    <div class="fix-icon">
-                    <a href="#" id="searchsupplier"><img style="img-height20" src="../../../../img/search.png"></a>
+<div class="flex flex-col h-screen">
+    <!--  start::navbar Menu -->
+    <header class="flex relative top-0 text-semibold">
+        <!-------------------------------------------------------------------------------------->
+        <?php navBar(); ?>
+        <!-------------------------------------------------------------------------------------->
+    </header>
+    <!--  end::navbar Menu -->
+
+    <div class="flex flex-1 overflow-hidden">
+        <!--   start::Sidebar Menu -->
+        <!-------------------------------------------------------------------------------------->
+        <?php sideBar(); ?>
+        <!-------------------------------------------------------------------------------------->
+        <!--   end::Sideba Menu -->
+
+        <!--   start::Main Content  -->
+        <main class="flex flex-1 overflow-y-auto overflow-x-hidden paragraph px-2">
+        <!-- Content Page -->
+        <input type="hidden" id="appcode" name="appcode" value="<?=$appcode?>">
+        <input type="hidden" id="comcd" name="comcd" value="<?=$_SESSION['COMCD']?>">
+        <input type="hidden" id="sessionUrl" name="sessionUrl" value="<?=$_SESSION['APPURL']?>">
+        <form class="w-full" method="POST" action="" id="suppliermaster" name="suppliermaster" onkeydown="if(event.keyCode == 13) { event.preventDefault(); return false;}">
+            <label class="text-color block text-lg font-bold"><?=$_SESSION['APPNAME']; ?></label>
+
+            <!-- supplier code -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('SUPPLIER_CODE')?></label>
+                    <div class="relative w-3/12">
+                        <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-full py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                id="SUPPLIERCD" name="SUPPLIERCD" value="<?=isset($data['SUPPLIERCD']) ? $data['SUPPLIERCD']: ''; ?>" onchange="unRequired();" required/>
+                        <a class="search-tag absolute top-0 end-0 h-7 py-2 px-3 rounded-e-xl border focus:ring-4 focus:outline-none"
+                            id="SEARCHSUPPLIER1">
+                            <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                        </a>
                     </div>
-                    
-                   
-                    <label class="text-copy"><?php echo $data['TXTLANG']['INSERT_DATE']; ?></label><!--&nbsp;&nbsp;-->&emsp;
-                    <input type="date" id="SUPPLIERREGDT" name="SUPPLIERREGDT"  value="<?=!empty($data['SUPPLIERREGDT']) ? date('Y-m-d', strtotime($data['SUPPLIERREGDT'])): ''?>" />    
-                    </div>
-                
-                
-                <!-- <div class="flex col-second"></div> -->
+                </div>
+                <div class="flex w-6/12 justify-end">
+                    <label class="w-6/12"></label>
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('INSERT_DATE')?></label>
+                    <input type="date" class="text-control shadow-md border z-20 rounded-xl h-7 w-3/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500 text-center"
+                            id="SUPPLIERREGDT" name="SUPPLIERREGDT" value="<?=!empty($data['SUPPLIERREGDT']) ? date('Y-m-d', strtotime($data['SUPPLIERREGDT'])) : date('Y-m-d'); ?>" />
+                </div>
             </div>
 
-            <div class="flex">
-                <div class="flex col-first">
-                    <label class="label-width27"><?php echo $data['TXTLANG']['SUPPLIER_NAME']; ?></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <input class="width43 req form-control" type="text" id="SUPPLIERNAME" name="SUPPLIERNAME"  value="<?=!empty($data['SUPPLIERNAME']) ? $data['SUPPLIERNAME']: ''?>" required/>&nbsp;
-                    <label class="label-width15"><?php echo $data['TXTLANG']['SEARCH_CHAR']; ?></label>
-                    <input class="width20  form-control" type="text" id="SUPPLIERSEARCH" name="SUPPLIERSEARCH"  value="<?=!empty($data['SUPPLIERSEARCH']) ? $data['SUPPLIERSEARCH']: ''?>" />
-                </div>                
+            <!-- supplier name -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('SUPPLIER_NAME')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        id="SUPPLIERNAME" name="SUPPLIERNAME" value="<?=isset($data['SUPPLIERNAME']) ? $data['SUPPLIERNAME']: ''; ?>" onchange="unRequired();" required/>
+                </div>
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('SEARCH_CHAR')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        id="SUPPLIERSEARCH" name="SUPPLIERSEARCH" value="<?=isset($data['SUPPLIERSEARCH']) ? $data['SUPPLIERSEARCH']: ''; ?>" onchange="unRequired();" required/>
+                </div>
             </div>
 
-            <div class="flex">
-                <div class="flex col-first">
-                    <label class="label-width27"><?php echo $data['TXTLANG']['TAXID']; ?></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <input class="width20 req form-control" type="text" id="SUPPLIERSHORTNAME" name="SUPPLIERSHORTNAME"  value="<?=!empty($data['SUPPLIERSHORTNAME']) ? $data['SUPPLIERSHORTNAME']: ''?>" required/>&emsp;&nbsp;
-                    <label class="label-width24"><?php echo $data['TXTLANG']['HEADOFFICEBRANCH']; ?></label>
-                    <select class="width22 option-text form-select form-select-sm" id="FACTORYCODE" name="FACTORYCODE" >
+            <!-- address -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('ADDR')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        name="SUPPLIERADDR1" id="SUPPLIERADDR1" value="<?=isset($data['SUPPLIERADDR1']) ? $data['SUPPLIERADDR1']: ''; ?>" onchange="unRequired();" required/>
+                </div>
+                <div class="flex w-6/12">
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-full py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        name="SUPPLIERADDR2" id="SUPPLIERADDR2" value="<?=isset($data['SUPPLIERADDR2']) ? $data['SUPPLIERADDR2']: ''; ?>"/>
+                </div>
+            </div>
+
+            <!-- postal code -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('POST_CODE')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-3/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        name="SUPPLIERZIPCODE" id="SUPPLIERZIPCODE" value="<?=isset($data['SUPPLIERZIPCODE']) ? $data['SUPPLIERZIPCODE']: ''; ?>"/>
+                </div>
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('TEL')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-3/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        id="SUPPLIERTEL" name="SUPPLIERTEL" value="<?=isset($data['SUPPLIERTEL']) ? $data['SUPPLIERTEL']: ''; ?>"/>
+                    <label class="text-color block text-sm w-3/12 text-center pt-1"><?=checklang('FAX')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-3/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        id="SUPPLIERFAX" name="SUPPLIERFAX" value="<?=isset($data['SUPPLIERFAX']) ? $data['SUPPLIERFAX']: ''; ?>"/>
+                </div>
+            </div>
+
+
+            <!-- email -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('EMAIL')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        id="SUPPLIEREMAIL" name="SUPPLIEREMAIL" value="<?=isset($data['SUPPLIEREMAIL']) ? $data['SUPPLIEREMAIL']: ''; ?>"/>
+                </div>
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('SUPPLIER_STAFF_NAME')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        id="SUPPLIERCONTACT" name="SUPPLIERCONTACT" value="<?=isset($data['SUPPLIERCONTACT']) ? $data['SUPPLIERCONTACT']: ''; ?>"/>
+                </div>
+            </div>
+
+            <!-- tax id -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">     
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('TAXID')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-3/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        id="SUPPLIERSHORTNAME" name="SUPPLIERSHORTNAME"  maxlength="13" value="<?=isset($data['SUPPLIERSHORTNAME']) ? $data['SUPPLIERSHORTNAME']: ''; ?>" onchange="unRequired();" required/>
+                    <input type="hidden" id="ROWCOUNTER" name="ROWCOUNTER" value="<?=isset($data['ROWCOUNTER']) ? $data['ROWCOUNTER']: ''?>">
+                </div>
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('HEADOFFICEBRANCH')?></label>
+                    <select class="text-control shadow-md border mr-2 px-3 h-7 w-3/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500" 
+                        id="FACTORYCODE" name="FACTORYCODE" onchange="unRequired();" required>
                         <option value=""></option>
-                        <?php foreach ($kbnbranch as $key => $item) { ?>
-                            <option value="<?php echo $key ?>" <?php echo (isset($data['FACTORYCODE']) && $data['FACTORYCODE'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
+                        <?php foreach ($BRANCH_KBN as $key => $item) { ?>
+                            <option value="<?=$key ?>" <?=(isset($data['FACTORYCODE']) && $data['FACTORYCODE'] == $key) ? 'selected' : '' ?>><?=$item ?></option>
                         <?php } ?>
                     </select>
-                    <input class="width20 req form-control" type="text" id="SUPPLIERADD01" name="SUPPLIERADD01" required value="<?=!empty($data['SUPPLIERADD01']) ? $data['SUPPLIERADD01']: ''?>" />
-                  
-                </div>     
-            </div>
-            <!-- <br><br> -->
-
-            <div class="flex">
-                <div class="flex col-first">
-                    <label class="label-width27"><?php echo $data['TXTLANG']['OWNPLACE']; ?></label>
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    <label class="label-width30"><?php echo $data['TXTLANG']['COUNTRYCD']; ?></label>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
-                    <input class="width17 req form-control" type="text" id="COUNTRYCD" name="COUNTRYCD" 
-                    required <?php if(!empty($data['COUNTRYCD'])){ ?> value="<?php echo $data['COUNTRYCD']; ?>"<?php } else { ?> value="<?php echo isset($_GET['countrycd']) ? $_GET['countrycd']: ''; ?>" <?php }?>/>
-                  
-                    <div class="fix-icon">
-                        <a href="#" id="searchcountry"><img style="img-height20" src="../../../../img/search.png"></a>
-                    </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-                    <label class="label-width24"><?php echo $data['TXTLANG']['STATECD']; ?></label>
-                    <input class="width17 req form-control" type="text" id="STATECD" name="STATECD" required
-                     <?php if(!empty($data['STATECD'])){ ?> value="<?php echo $data['STATECD']; ?>"<?php } else { ?> value="<?php echo isset($_GET['statecd']) ? $_GET['statecd']: ''; ?>" <?php }?>/>
-                    <div class="fix-icon">
-                    <a href="#" id="searchstate"><img style="img-height20" src="../../../../img/search.png"></a>
-                    </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <label class="label-width24"><?php echo $data['TXTLANG']['CITYCD']; ?></label>
-                    <input class="width17 req form-control" type="text" id="CITYCD" name="CITYCD"required  
-                     <?php if(!empty($data['CITYCD'])){ ?> value="<?php echo $data['CITYCD']; ?>"<?php } else { ?> value="<?php echo isset($_GET['citycd']) ? $_GET['citycd']: ''; ?>" <?php }?>/>
-                    <div class="fix-icon">
-                        <a href="#" id="searchcity"><img style="img-height20" src="../../../../img/search.png"></a>
-                    </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <label class="label-width24"><?php echo $data['TXTLANG']['CITYNAME']; ?></label>
-                    <input class="width50 form-control" type="text" id="CITYNAME" name="CITYNAME"  value="<?=!empty($data['CITYNAME']) ? $data['CITYNAME']: ''?>"readonly />
-                </div>
-                <div class="flex col-second"></div>
-            </div>
-            
-
-
-
-            <div class="flex">
-                <div class="flex col-first">
-                    <label class="label-width27"><?php echo $data['TXTLANG']['POST_CODE']; ?></label>&nbsp;                    
-                    <input class="width15  form-control" type="text" id="SUPPLIERZIPCODE" name="SUPPLIERZIPCODE"  value="<?=!empty($data['SUPPLIERZIPCODE']) ? $data['SUPPLIERZIPCODE']: ''?>" />
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-3/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                           id="SUPPLIERADD01" name="SUPPLIERADD01" maxlength="5" value="<?=isset($data['SUPPLIERADD01']) ? $data['SUPPLIERADD01']: ''; ?>" onchange="unRequired();" required/>
                 </div>
             </div>
 
-            <div class="flex">
-                <div class="flex col-first">
-                    <label class="label-width27"><?php echo $data['TXTLANG']['ADDR']; ?></label>&emsp;&emsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                    
-                    <input class="width43  form-control" type="text" id="SUPPLIERADDR1" name="SUPPLIERADDR1"  value="<?=!empty($data['SUPPLIERADDR1']) ? $data['SUPPLIERADDR1']: ''?>" />
-                    <input class="width43  form-control" type="text" id="SUPPLIERADDR2" name="SUPPLIERADDR2"  value="<?=!empty($data['SUPPLIERADDR2']) ? $data['SUPPLIERADDR2']: ''?>" />
+            <!-- country code -->
+            <div class="flex mb-2">   
+                <div class="flex w-6/12 mr-1">     
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"></label>
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('COUNTRYCD')?></label>
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('STATECD')?></label>
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('CITYCD')?></label>
+                </div>
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('CITYNAME')?></label>
                 </div>
             </div>
 
-            <div class="flex">
-                <div class="flex col-first">
-                <label class="label-width27"><?php echo $data['TXTLANG']['TEL']; ?></label>&nbsp;
-                    <input class="width15 form-control" type="text" id="SUPPLIERTEL" name="SUPPLIERTEL"  value="<?=!empty($data['SUPPLIERTEL']) ? $data['SUPPLIERTEL']: ''?>" />
-                    <label class="label-width22"><?php echo $data['TXTLANG']['FAX']; ?></label>&emsp;
-                    <input class="width22 form-control" type="text" id="SUPPLIERFAX" name="SUPPLIERFAX"  value="<?=!empty($data['SUPPLIERFAX']) ? $data['SUPPLIERFAX']: ''?>" />
-                   
-                </div>
-                <div class="flex col-second">
-                
-                </div>
-            </div>
-
-            <div class="flex">
-                <div class="flex col-first">
-                <label class="label-width27"><?php echo $data['TXTLANG']['EMAIL']; ?></label>&nbsp;
-                <input class="width22 form-control" type="text" id="SUPPLIEREMAIL" name="SUPPLIEREMAIL"  value="<?=!empty($data['SUPPLIEREMAIL']) ? $data['SUPPLIEREMAIL']: ''?>" />                  
-                </div>  
-                <div class="flex col-second">
-                    <label class="text-copy"><?php echo $data['TXTLANG']['SUPPLIER_STAFF_NAME']; ?></label><!--&nbsp;&nbsp;-->
-                    <input class="width20  form-control" type="text" id="SUPPLIERCONTACT" name="SUPPLIERCONTACT"  value="<?=!empty($data['SUPPLIERCONTACT']) ? $data['SUPPLIERCONTACT']: ''?>" />   
-                </div>               
-            </div>
-
-
-            <div class="flex">
-                <div class="flex col-first">
-                <label class="label-width27"><?php echo $data['TXTLANG']['BANK_CODE']; ?></label>&nbsp;
-                <input class="width22 form-control" type="text" id="BANKNAME" name="BANKNAME"  value="<?=!empty($data['BANKNAME']) ? $data['BANKNAME']: ''?>" />                  
-                </div>  
-                <div class="flex col-second">
-                    <label class="text-copy"><?php echo $data['TXTLANG']['BRANCH_NAME']; ?></label><!--&nbsp;&nbsp;-->
-                    <input class="width20  form-control" type="text" id="BRANCHNAME" name="BRANCHNAME"  value="<?=!empty($data['BRANCHNAME']) ? $data['BRANCHNAME']: ''?>" />   
-                </div>               
-            </div>
-
-
-
-            <div class="flex">
-                <div class="flex col-first">
-                <label class="label-width27"><?php echo $data['TXTLANG']['BANK_ACC_TYPE']; ?></label>&nbsp;
-                <select class="width22 option-text form-select form-select-sm" id="SUPPLIERBKACCTYP" name="SUPPLIERBKACCTYP" >
-                        <option value=""></option>
-                        <?php foreach ($bkacctype as $key => $item) { ?>
-                            <option value="<?php echo $key ?>" <?php echo (isset($data['SUPPLIERBKACCTYP']) && $data['SUPPLIERBKACCTYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
-                        <?php } ?>
-                    </select> 
-                    <label class="text-copy"><?php echo $data['TXTLANG']['BANK_ACC_NO']; ?></label><!--&nbsp;&nbsp;-->
-                    <input class="width20  form-control" type="text" id="SUPPLIERBKACCNO" name="SUPPLIERBKACCNO"  value="<?=!empty($data['SUPPLIERBKACCNO']) ? $data['SUPPLIERBKACCNO']: ''?>" />               
-                </div>  
-
-                <div class="flex col-second">
-                    <label class="text-copy"><?php echo $data['TXTLANG']['NOMINAL_PERSON']; ?></label><!--&nbsp;&nbsp;-->
-                    <input class="width20  form-control" type="text" id="SUPPLIERBKACCNAME" name="SUPPLIERBKACCNAME"  value="<?=!empty($data['SUPPLIERBKACCNAME']) ? $data['SUPPLIERBKACCNAME']: ''?>" />   
-                </div>               
-            </div>
-
-            <div class="flex">
-                <div class="flex col-first">
-                    <label class="label-width27"><?php echo $data['TXTLANG']['UNITPRICE_ACCURACY']; ?></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <select class="width22 req option-text form-select form-select-sm" id="SUPPLIERUNITROUNDTYP" name="SUPPLIERUNITROUNDTYP" required>
-                        <option value=""></option>
-                        <?php foreach ($roun_d1 as $key => $item) { ?>
-                            <option value="<?php echo $key ?>" <?php echo (isset($data['SUPPLIERUNITROUNDTYP']) && $data['SUPPLIERUNITROUNDTYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
-                        <?php } ?>
-                    </select> 
-                    <label class="label-width20"><?php echo $data['TXTLANG']['AMOUNT_ACCURACY']; ?></label>  
-                    <select class="width22 req option-text form-select form-select-sm" id="SUPPLIERAMTROUNDTYP" name="SUPPLIERAMTROUNDTYP" required>
-                        <option value=""></option>
-                        <?php foreach ($roun_d2 as $key => $item) { ?>
-                            <option value="<?php echo $key ?>" <?php echo (isset($data['SUPPLIERAMTROUNDTYP']) && $data['SUPPLIERAMTROUNDTYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
-                        <?php } ?>
-                    </select> 
-                     <label class="label-width20"><?php echo $data['TXTLANG']['TAX_ROUND_TYPE']; ?></label>  
-                    <select class="width22 req option-text form-select form-select-sm" id="SUPPLIERTAXROUNDTYP" name="SUPPLIERTAXROUNDTYP" required>
-                        <option value=""></option>
-                        <?php foreach ($roun_d3 as $key => $item) { ?>
-                            <option value="<?php echo $key ?>" <?php echo (isset($data['SUPPLIERTAXROUNDTYP']) && $data['SUPPLIERTAXROUNDTYP'] == $key) ? 'selected' : '' ?>><?php echo $item ?></option>
-                        <?php } ?>
-                    </select> 
-                </div>
-            </div>
-
-
-
-
-
-
-
-            <div class="flex">
-                <div class="flex col-first">
-                <label class="label-width27"><?php echo $data['TXTLANG']['PAY_TSCODE']; ?></label>
-                <input class="width17  form-control" type="text" id="SUPBILLCD" name="SUPBILLCD"   
-                     <?php if(!empty($data['SUPBILLCD'])){ ?> value="<?php echo $data['SUPBILLCD']; ?>"<?php } else { ?> value="<?php echo isset($_GET['supbillcd']) ? $_GET['supbillcd']: ''; ?>" <?php }?>/>
-                     <div class="fix-icon">
-                    <a href="#" id="searchsupplier1"><img style="img-height20" src="../../../../img/search.png"></a>
+            <!-- own place -->
+            <div class="flex mb-2">   
+                <div class="flex w-6/12 mr-1">     
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('OWNPLACE')?></label>
+                    <div class="relative w-3/12">
+                        <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-full py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                id="COUNTRYCD" name="COUNTRYCD" value="<?=isset($data['COUNTRYCD']) ? $data['COUNTRYCD']: ''; ?>" onchange="unRequired();" required/>
+                        <a class="search-tag absolute top-0 end-0 h-7 py-2 px-3 rounded-e-xl border focus:ring-4 focus:outline-none"
+                            id="SEARCHCOUNTRY">
+                            <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                        </a>
                     </div>
-                    &nbsp;&nbsp;&nbsp;
-                    <input class="width30 form-control" type="text" id="SUPBILLNAME" name="SUPBILLNAME"  value="<?=!empty($data['SUPBILLNAME']) ? $data['SUPBILLNAME']: ''?>"readonly />  
-                </div>
-             </div>
-
-                <div class="flex">
-                <div class="flex col-first">
-                <label class="label-width27"><?php echo $data['TXTLANG']['CU_CODE']; ?></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;
-                <input class="width15 req form-control" type="text" id="CURRENCYCD" name="CURRENCYCD"  
-                 required <?php if(!empty($data['CURRENCYCD'])){ ?> value="<?php echo $data['CURRENCYCD']; ?>"<?php } else { ?> value="<?php echo isset($_GET['currencycd']) ? $_GET['currencycd']: ''; ?>" <?php }?>/>
-                 <div class="fix-icon">
-               <a href="#" id="searchcurrency"><img style="img-height20" src="../../../../img/search.png"></a>
-               </div>      &emsp;&emsp;&emsp;
-               
-               
-                <label class="label-width15"><?php echo $data['TXTLANG']['PAY_DAY']; ?></label>
-                    <input class="width10 form-control" type="text" id="SUPPLIERRECDAY" name="SUPPLIERRECDAY"  value="<?=!empty($data['SUPPLIERRECDAY']) ? $data['SUPPLIERRECDAY']: ''?>" />
-                    <label class="label-width15"><?php echo $data['TXTLANG']['DAY']; ?></label>&nbsp;&nbsp;&nbsp;  
-
-                    <label class="label-width15"><?php echo $data['TXTLANG']['CLOSE_DAY']; ?></label>
-                    <input class="width10 form-control" type="text" id="SUPPLIERCLOSEDAY" name="SUPPLIERCLOSEDAY"  value="<?=!empty($data['SUPPLIERCLOSEDAY']) ? $data['SUPPLIERCLOSEDAY']: ''?>" />
-                    <label class="label-width15"><?php echo $data['TXTLANG']['DAY']; ?></label>
+                    <div class="relative w-3/12 ml-1 mr-1">
+                        <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-full py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                id="STATECD" name="STATECD" value="<?=isset($data['STATECD']) ? $data['STATECD']: ''; ?>" onchange="unRequired();" required/>
+                        <a class="search-tag absolute top-0 end-0 h-7 py-2 px-3 rounded-e-xl border focus:ring-4 focus:outline-none"
+                            id="SEARCHSTATE">
+                            <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                        </a>
                     </div>
-                <!-- <div class="flex col-second"></div> -->
-                  </div>
-
-
-            <div class="flex">
-                <div class="flex col-first">
-                <label class="label-width27"><?php echo $data['TXTLANG']['REMARK']; ?></label>
-                <input class="width43 form-control" type="text" id="SUPPLIERREMARK" name="SUPPLIERREMARK"  value="<?=!empty($data['SUPPLIERREMARK']) ? $data['SUPPLIERREMARK']: ''?>" />
-           </div>
-           <div class="flex col-second"></div>
-                
-            </div>
-
-
-
-            <div class="flex">
-                <div class="flex col-first">
-            &emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;
-            &emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;
-            &emsp13;&emsp13;
-                        
-                <input type="checkbox" id="SUPPLIEROFFFLG" name="SUPPLIEROFFFLG" value="T" style="width: 15px"
-                    <?php echo (!empty($data['SUPPLIEROFFFLG']) && $data['SUPPLIEROFFFLG'] == 'T') ? 'checked' : '' ?>/>&emsp;
-                    <label class="label-width15"><?php echo $data['TXTLANG']['STOP_PURCHASE']; ?></label>
-                    <input type="checkbox" id="SUPPLIERAFFILIATEFLG" name="SUPPLIERAFFILIATEFLG" value="T" style="width: 15px"
-                    <?php echo (!empty($data['SUPPLIERAFFILIATEFLG']) && $data['SUPPLIERAFFILIATEFLG'] == 'T') ? 'checked' : '' ?>/>&emsp;
-                    <label class="label-width15"><?php echo $data['TXTLANG']['AFFILIATE']; ?></label>
+                    <div class="relative w-3/12">
+                        <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-full py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                id="CITYCD" name="CITYCD" value="<?=isset($data['CITYCD']) ? $data['CITYCD']: ''; ?>" onchange="unRequired();" required/>
+                        <a class="search-tag absolute top-0 end-0 h-7 py-2 px-3 rounded-e-xl border focus:ring-4 focus:outline-none"
+                            id="SEARCHCITY">
+                            <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
-                
-            </div>
-                </div>
-                        
-           
-            <div class="flex footer">
-            <div class="flex footer">
-                <div class="flex col-first">
-                    <button type="button" class="btn btn-outline-secondary btn-action" id="insert" name="insert" <?php if(!empty($data['SYSPVL']) && $data['SYSPVL']['SYSVIS_INSERT'] != 'T') {?> hidden <?php }?>
-                    <?php if(!empty($data['isInsert']) && $data['isInsert'] == 'off') { ?> disabled <?php } ?>><?php echo $data['TXTLANG']['INSERT'];?></button>&emsp;&emsp;
-                    <button type="button" class="btn btn-outline-secondary btn-action" id="update" name="update" <?php if(!empty($data['SYSPVL']) && $data['SYSPVL']['SYSVIS_UPDATE'] != 'T') {?> hidden <?php }?>
-                    <?php if(!empty($data['isInsert']) && $data['isInsert'] == 'on') { ?> disabled <?php } ?>><?php echo $data['TXTLANG']['UPDATE']; ?></button>&emsp;&emsp;
-                    <button type="button" class="btn btn-outline-secondary btn-action" id="delete" name="delete" <?php if(!empty($data['SYSPVL']) && $data['SYSPVL']['SYSVIS_DELETE'] != 'T') {?> hidden <?php }?>
-                    <?php if(!empty($data['isInsert']) && $data['isInsert'] == 'on') { ?> disabled <?php } ?>><?php echo $data['TXTLANG']['DELETE']; ?></button>
-                </div>
-                <div class="flex col-second" style="justify-content: right;">
-                <button type="reset" id="clear" name="clear" onclick="unsetSession(this.form);" class="btn btn-outline-secondary btn-action"><?php echo $data['TXTLANG']['CLEAR']; ?></button>&emsp;&emsp;
-                    <button type="button" id="end" class="btn btn-outline-secondary btn-action"><?php echo $data['TXTLANG']['END']; ?></button>
+                <div class="flex w-6/12">
+                    <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-full py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500 read"
+                        name="CITYNAME" id="CITYNAME" value="<?=isset($data['CITYNAME']) ? $data['CITYNAME']: ''; ?>" readonly/>
                 </div>
             </div>
-        </div>
-    </form>
-    <div id="loading" class="on" style="display: none;">
+
+            <!-- cutoff period -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">     
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('CLOSE_DAY')?></label>
+                    <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-2/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        name="SUPPLIERCLOSEDAY" id="SUPPLIERCLOSEDAY" value="<?=isset($data['SUPPLIERCLOSEDAY']) ? $data['SUPPLIERCLOSEDAY']: ''; ?>"
+                        onchange="this.value = dec2digit(this.value);"
+                        oninput="this.value = stringReplacez(this.value);"/>
+                    <label class="text-color block text-sm w-1/12 pt-1 text-center"><?=checklang('DAY')?></label>
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('PAY_DAY')?></label>
+                    <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-2/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        name="SUPPLIERRECDAY" id="SUPPLIERRECDAY" value="<?=isset($data['SUPPLIERRECDAY']) ? $data['SUPPLIERRECDAY']: ''; ?>"
+                        onchange="this.value = dec2digit(this.value);"
+                        oninput="this.value = stringReplacez(this.value);"/>
+                    <label class="text-color block text-sm w-1/12 pt-1 text-center"><?=checklang('DAY')?></label>
+                </div>
+                <div class="flex w-6/12">
+                    
+                    <input type="hidden" name="SUPPLIERTRANSFERFLG" value="<?=!empty($data['SUPPLIERTRANSFERFLG']) ? $data['SUPPLIERTRANSFERFLG']: 'F'?>"/>
+                    <input type="hidden" name="SUPPLIEROFFFLG" value="F"/>
+                    <input type="checkbox" id="SUPPLIEROFFFLG" name="SUPPLIEROFFFLG" value="T" <?php echo (isset($data['SUPPLIEROFFFLG']) && $data['SUPPLIEROFFFLG'] == 'T') ? 'checked' : '' ?>/>
+                    <label class="text-color block text-sm pt-1 w-2/12 text-center"><?=checklang('STOP_PURCHASE')?></label>
+                    <input type="hidden" name="SUPPLIERAFFILIATEFLG" value="F"/>
+                    <input type="checkbox" id="SUPPLIERAFFILIATEFLG" name="SUPPLIERAFFILIATEFLG" value="T" <?php echo (isset($data['SUPPLIERAFFILIATEFLG']) && $data['SUPPLIERAFFILIATEFLG'] == 'T') ? 'checked' : '' ?>/>
+                    <label class="text-color block text-sm pt-1 w-2/12 text-center"><?=checklang('AFFILIATE')?></label>
+                </div>
+            </div>
+
+            <!-- currency code -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">     
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('CU_CODE')?></label>
+                    <div class="relative w-3/12">
+                        <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-full py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500 req"
+                                id="CURRENCYCD" name="CURRENCYCD" value="<?=isset($data['CURRENCYCD']) ? $data['CURRENCYCD']: ''; ?>" onchange="unRequired();" required/>
+                        <a class="search-tag absolute top-0 end-0 h-7 py-2 px-3 rounded-e-xl border focus:ring-4 focus:outline-none"
+                            id="SEARCHCURRENCY">
+                            <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('UNITPRICE_ACCURACY')?></label>
+                    <select class="text-control shadow-md border mr-2 px-3 h-7 w-3/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 req" 
+                        id="SUPPLIERUNITROUNDTYP" name="SUPPLIERUNITROUNDTYP" onchange="unRequired();" required>
+                        <option value=""></option>
+                        <?php foreach ($ROUND as $key => $item) { ?>
+                            <option value="<?=$key ?>" <?=(isset($data['SUPPLIERUNITROUNDTYP']) && $data['SUPPLIERUNITROUNDTYP'] == $key) ? 'selected' : '' ?>><?=$item ?></option>
+                        <?php } ?>
+                    </select>  
+                </div>
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('AMOUNT_ACCURACY')?></label>  
+                    <select class="text-control shadow-md border mr-2 px-3 h-7 w-3/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 req" 
+                        id="SUPPLIERAMTROUNDTYP" name="SUPPLIERAMTROUNDTYP" onchange="unRequired();" required>
+                        <option value=""></option>
+                        <?php foreach ($ROUND as $key => $item) { ?>
+                            <option value="<?=$key ?>" <?=(isset($data['SUPPLIERAMTROUNDTYP']) && $data['SUPPLIERAMTROUNDTYP'] == $key) ? 'selected' : '' ?>><?=$item ?></option>
+                        <?php } ?>
+                    </select>  
+                    <label class="text-color block text-sm w-3/12 pt-1 text-center"><?=checklang('TAX_ROUND_TYPE')?></label>
+                    <select class="text-control shadow-md border mr-2 px-3 h-7 w-3/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 req" 
+                        id="SUPPLIERTAXROUNDTYP" name="SUPPLIERTAXROUNDTYP" onchange="unRequired();" required>
+                        <option value=""></option>
+                        <?php foreach ($ROUND as $key => $item) { ?>
+                            <option value="<?=$key ?>" <?=(isset($data['SUPPLIERTAXROUNDTYP']) && $data['SUPPLIERTAXROUNDTYP'] == $key) ? 'selected' : '' ?>><?=$item ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+
+            <!-- payeecode -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">     
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('PAY_TSCODE')?></label>
+                    <div class="relative w-3/12">
+                        <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-full py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                            id="SUPBILLCD" name="SUPBILLCD" value="<?=isset($data['SUPBILLCD']) ? $data['SUPBILLCD']: ''; ?>"/>
+                        <a class="search-tag absolute top-0 end-0 h-7 py-2 px-3 rounded-e-xl border focus:ring-4 focus:outline-none"
+                            id="SEARCHSUPPLIER2">
+                            <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <input type="text" class="text-control shadow-md border z-20 rounded-xl h-7 w-6/12 py-2 px-3 ml-1 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500 read"
+                        id="SUPBILLNAME" name="SUPBILLNAME" value="<?=isset($data['SUPBILLNAME']) ? $data['SUPBILLNAME']: ''; ?>" readonly/>
+                </div>                
+            </div>                
+
+            <!-- bank code -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('BANK_CODE')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        id="BANKNAME" name="BANKNAME" value="<?=isset($data['BANKNAME']) ? $data['BANKNAME']: ''; ?>"/>
+                </div>
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('BRANCH_NAME')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        id="BRANCHNAME" name="BRANCHNAME" value="<?=isset($data['BRANCHNAME']) ? $data['BRANCHNAME']: ''; ?>"/>
+                </div>
+            </div>
+
+            <!-- account type -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('BANK_ACC_TYPE')?></label>
+                    <select class="text-control shadow-md border mr-2 px-3 h-7 w-3/12 text-left text-[12px] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500" 
+                        id="SUPPLIERBKACCTYP" name="SUPPLIERBKACCTYP">
+                        <option value=""></option>
+                        <?php foreach ($BRANCH_KBN as $key => $item) { ?>
+                            <option value="<?=$key ?>" <?=(isset($data['SUPPLIERBKACCTYP']) && $data['SUPPLIERBKACCTYP'] == $key) ? 'selected' : '' ?>><?=$item ?></option>
+                        <?php } ?>
+                    </select>
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('BANK_ACC_NO')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-3/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                           id="SUPPLIERBKACCNO" name="SUPPLIERBKACCNO" value="<?=isset($data['SUPPLIERBKACCNO']) ? $data['SUPPLIERBKACCNO']: ''; ?>"/>
+                </div>
+                <div class="flex w-6/12">
+                    <label class="text-color block text-sm w-3/12 pl-2 pt-1"><?=checklang('NOMINAL_PERSON')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                           id="SUPPLIERBKACCNAME" name="SUPPLIERBKACCNAME" value="<?=isset($data['SUPPLIERBKACCNAME']) ? $data['SUPPLIERBKACCNAME']: ''; ?>"/>
+                </div>
+            </div>
+
+            <!-- comment -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 mr-1">
+                    <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=checklang('REMARK')?></label>
+                    <input type="text" class="text-control shadow-md border rounded-xl h-7 w-9/12 py-2 px-3 text-gray-700 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                            id="SUPPLIERREMARK" name="SUPPLIERREMARK" value="<?=isset($data['SUPPLIERREMARK']) ? $data['SUPPLIERREMARK']: ''; ?>"/>
+                </div>
+                <div class="flex w-6/12">
+                    <input type="hidden" id="USEFLG" name="USEFLG" value="<?=isset($data['USEFLG']) ? $data['USEFLG']: ''?>">
+                    <input type="hidden" id="GMAPADR" name="GMAPADR" value="<?=isset($data['GMAPADR']) ? $data['GMAPADR']: ''?>">
+                    <input type="hidden" id="CURRENCY" name="CURRENCY" value="<?=isset($data['CURRENCY']) ? $data['CURRENCY']: ''?>">
+                    <input type="hidden" id="DIRECTCD" name="DIRECTCD" value="<?=isset($data['DIRECTCD']) ? $data['DIRECTCD']: ''?>">
+                    <input type="hidden" id="BANKBRANCHCD" name="BANKBRANCHCD" value="<?=isset($data['BANKBRANCHCD']) ? $data['BANKBRANCHCD']: ''?>">
+                    <input type="hidden" id="DIRECTNAME" name="DIRECTNAME" value="<?=isset($data['DIRECTNAME']) ? $data['DIRECTNAME']: ''?>">
+                    <input type="hidden" id="SUPPLIERPWD" name="SUPPLIERPWD" value="<?=isset($data['SUPPLIERPWD']) ? $data['SUPPLIERPWD']: ''?>">
+                    <input type="hidden" id="CURRENCYDISP" name="CURRENCYDISP" value="<?=isset($data['CURRENCYDISP']) ? $data['CURRENCYDISP']: ''?>">
+                    <input type="hidden" id="SUPPLIERTAXTYP" name="SUPPLIERTAXTYP" value="<?=isset($data['SUPPLIERTAXTYP']) ? $data['SUPPLIERTAXTYP']: ''?>">
+                    <input type="hidden" id="SUPPLIEREDITYP" name="SUPPLIEREDITYP" value="<?=isset($data['SUPPLIEREDITYP']) ? $data['SUPPLIEREDITYP']: ''?>">
+                    <input type="hidden" id="SUPPLIERTAXRATE" name="SUPPLIERTAXRATE" value="<?=isset($data['SUPPLIERTAXRATE']) ? $data['SUPPLIERTAXRATE']: ''?>">
+                    <input type="hidden" id="SUPPLIERCREDITLIMIT" name="SUPPLIERCREDITLIMIT" value="<?=isset($data['SUPPLIERCREDITLIMIT']) ? $data['SUPPLIERCREDITLIMIT']: ''?>">
+                    <input type="hidden" id="SUPPLIERTRANSPORTTYP" name="SUPPLIERTRANSPORTTYP" value="<?=isset($data['SUPPLIERTRANSPORTTYP']) ? $data['SUPPLIERTRANSPORTTYP']: ''?>"> 
+                </div>
+            </div>
+            <!-- button -->
+            <div class="flex mb-2 py-1">   
+                <div class="flex w-6/12 px-1">
+                    <button type="button" class="btn text-color border-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-1 text-center me-2 mb-1" 
+                            id="INSERT" name="INSERT" <?php if(!empty($data['SYSPVL']) && $data['SYSPVL']['SYSVIS_INSERT'] != 'T') {?> hidden <?php }?>
+                            <?php if(!$data['INS']) { ?> disabled <?php } ?>><?=checklang('INSERT'); ?></button>
+                    <button type="button" class="btn text-color border-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-1 text-center me-2 mb-1" 
+                            id="UPDATE" name="UPDATE" <?php if(!empty($data['SYSPVL']) && $data['SYSPVL']['SYSVIS_UPDATE'] != 'T') {?> hidden <?php }?>
+                            <?php if($data['INS']) { ?> disabled <?php } ?>><?=checklang('UPDATE'); ?></button>
+                    <button type="button" class="btn text-color border-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-1 text-center me-2 mb-1" 
+                            id="DELETE" name="DELETE" <?php if(!empty($data['SYSPVL']) && $data['SYSPVL']['SYSVIS_DELETE'] != 'T') {?> hidden <?php }?>
+                            <?php if($data['INS']) { ?> disabled <?php } ?>><?=checklang('DELETE'); ?></button>
+                </div>
+                <div class="flex w-6/12 px-1 justify-end">
+                    <button type="reset" id="CLEAR" name="CLEAR" class="btn text-color border-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-1 text-center me-2 mb-1" 
+                        onclick="unsetSession(this.form);"><?=checklang('CLEAR')?></button>
+                    <button type="button" id="END" class="btn text-color border-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-1 text-center me-2 mb-1" 
+                    onclick="questionDialog(1, '<?=lang('question1')?>', '<?=lang('yes'); ?>', '<?=lang('no'); ?>');"><?=checklang('END'); ?></button>
+                </div>    
+            </div>
+        </form>
+    </main>
+        <!--   end::Main Content -->
+    </div>
+
+    <!-- start::footer -->
+    <div class="flex bg-gray-200">
+        <!-------------------------------------------------------------------------------------->
+        <?php footerBar(); ?>
+        <!-------------------------------------------------------------------------------------->
+    </div>
+    <!-- end::footer -->
+
+    <!-- start::loading -->
+    <div id="loading" class="on hidden">
         <div class="cv-spinner"><div class="spinner"></div></div>
     </div>
+    <!-- end::loading -->
+</div>
 </body>
+<script src="./js/script.js" ></script>
+<!-- <script src="./js/script.js" integrity="sha384-eKyo9j1O+ZQqKRxLHlVMMHhoXUycVyohdyplCLdhKOGxrvZPhQQyN4Z7MZnvijHA" crossorigin="anonymous"></script> -->
 <script type="text/javascript">
-    $("#end").on('click', function() {
-        Swal.fire({ 
-            title: '',
-            text: '<?=$lang['question1']; ?>',
-            background: '#8ca3a3',
-            showCancelButton: true,
-            confirmButtonColor: 'silver',
-            cancelButtonColor: 'silver',
-            confirmButtonText: '<?=$lang['yes']; ?>',
-            cancelButtonText: '<?=$lang['nono']; ?>'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href="/DMCS_WEBAPP";
-            }
-        });
+    $(document).ready(function() {
+        unRequired();
+        // document.getElementById('INSERT').disabled = false;
+        // document.getElementById('UPDATE').disabled = true;
+        // document.getElementById('DELETE').disabled = true;
     });
 
+    function HandlePopupResultIndex(code, result, index) {
+        // console.log('result of popup is: ' + code + ' result : ' + result + ' index : ' + index);
+        if(index == '1') {
+            return getSearch(code, result);
+        } else {
+            return getElement('SUPBILLCD', result);
+        }
+    }
+
+    function HandlePopupResult(code, result) {
+        // console.log('result of popup is: ' + code + ' : ' + result);
+        return getElement(code, result);
+    }
+
     function alertValidation() {
-        Swal.fire({ 
+        return Swal.fire({ 
             title: '',
-            // icon: 'success',
-            text: '<?=$lang['validation1']; ?>',
-            background: '#8ca3a3',
+            text: '<?=lang('validation1'); ?>',
             showCancelButton: false,
-            confirmButtonColor: 'silver',
-            cancelButtonColor: 'silver',
-            confirmButtonText: '<?=$lang['yes']; ?>',
-            cancelButtonText: '<?=$lang['nono']; ?>'
+            confirmButtonText: '<?=lang('yes'); ?>',
+            cancelButtonText: '<?=lang('no'); ?>'
             }).then((result) => {
                 if (result.isConfirmed) { //
             }
         });
     }
 </script>
-<script src="./js/script.js"></script>
 </html>

@@ -1,9 +1,9 @@
-var page = $('#page').val();
 
-var isItem = false;
 var CITYCD;
-var COUNTRYCD = $('#COUNTRYCD').val();
+var isItem = false;
+var page = $('#page').val();
 var STATECD = $('#STATECD').val();
+var COUNTRYCD = $('#COUNTRYCD').val();
 
 $('table#table_result tr').click(function () {
     $('table#table_result tr').removeAttr('id')
@@ -14,38 +14,36 @@ $('table#table_result tr').click(function () {
 
     if(item.eq(0).text() != 'undefined') {
         isItem = true;
-        CITYCD = item.eq(0).text();
-
+        CITYCD = item.eq(1).text();
+        $('#currencycode').html(item.eq(1).text());
+        $('#decimalunit').html(item.eq(2).text());
     }
-
-    $('#currencycode').html(item.eq(0).text());
-    $('#decimalunit').html(item.eq(1).text());
     
-    $("#select_item").on('click', function() {
+    $('#select_item').on('click', function() {
         $('#loading').show();
-        return HandleResult(CITYCD,COUNTRYCD,STATECD);
+        return HandleResult(CITYCD, COUNTRYCD, STATECD);
     });
 });
 
-$("#view_item").on('click', function() {
+$('#view_item').on('click', function() {
     if(isItem) {
        $('#item_view').modal('show');
     }
 });    
 
-$("#back").on('click', function() {
+$('#back').on('click', function() {
     // window.history.back();
     // window.location.href=$('#routeUrl').val();
     return window.close();
 });
 
-function HandleResult(result,result2,result3) {
+function HandleResult(result, result2, result3) {
     try {
         if(page == 'CUSTOMERMASTER_DMCS_THA') {
             window.opener.HandlePopupResult('CITYCD', result);
         } 
         else if(page == 'TAXDETAILENTRY') {
-            window.opener.HandlePopupResultMultiple('CITYCD', result,'COUNTRYCD',result2,'STATECD',result3);
+            window.opener.HandlePopupResultMultiple('CITYCD', result, 'COUNTRYCD', result2, 'STATECD', result3);
         } 
         else {
             window.opener.HandlePopupResult('CITYCD', result);
@@ -82,11 +80,16 @@ async function clearForm(form) {
     for (var i = 0; i < text.length; i++)
         text[i].innerHTML= '';
 
-    // clearing table
+    // clearing table empty Row
     $('#table_result > tbody > tr').remove();
+    for (var i = 0; i < 10; i++) {
+        $('#table_result tbody').append('<tr class="row-empty" id="rowId' + i +'">' +
+                                            '<td class="h-6 border border-slate-700"></td>' +
+                                            '<td class="h-6 border border-slate-700"></td></tr>'
+        );
+    }
 
-    // refresh
-    window.location.href = 'index.php';
+    document.getElementById('rowcount').innerHTML = '0';
 
     return false;
 }

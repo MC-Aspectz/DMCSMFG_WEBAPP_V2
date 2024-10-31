@@ -119,17 +119,17 @@
                             foreach($data['ITEM'] as $key => $value) { ?>
                                 <tr class="divide-y divide-gray-200 csv" id="rowId<?=$key?>">
                                     <!-- <td class="hidden"><?=$key?></td> -->
-                                    <td class="h-6 w-1/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROSTARTDT']) ? $value['JOBPROSTARTDT']: '' ?></td>
-                                    <td class="h-6 w-1/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROORDERNO']) ? $value['JOBPROORDERNO']: '' ?></td>
-                                    <td class="h-6 w-1/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROPLACE']) ? $value['JOBPROPLACE']: '' ?></td>
-                                    <td class="h-6 w-2/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['WCNM']) ? $value['WCNM']: '' ?></td>
-                                    <td class="h-6 w-1/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROPSSORDERNO']) ? $value['JOBPROPSSORDERNO']: '' ?></td>
-                                    <td class="h-6 w-1/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROPSSNO']) ? $value['JOBPROPSSNO']: '' ?></td>
-                                    <td class="h-6 w-1/12 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['PROITEMCD']) ? $value['PROITEMCD']: '' ?></td>
-                                    <td class="h-6 w-6/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['ITEMNM']) ? $value['ITEMNM']: '' ?></td>
-                                    <td class="h-6 w-1/12 pr-2 text-sm border border-slate-700 text-right whitespace-nowrap"><?=isset($value['COMPQTY']) ? $value['COMPQTY']: '' ?></td>
-                                    <td class="h-6 w-1/12 text-sm border border-slate-700 text-center whitespace-nowrap"><?=isset($value['PROHOUR']) ? $value['PROHOUR']: '' ?></td>
-                                    <td class="h-6 w-1/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROREM']) ? $value['JOBPROREM']: '' ?></td>
+                                    <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROSTARTDT']) ? $value['JOBPROSTARTDT']: '' ?></td>
+                                    <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROORDERNO']) ? $value['JOBPROORDERNO']: '' ?></td>
+                                    <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROPLACE']) ? $value['JOBPROPLACE']: '' ?></td>
+                                    <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['WCNM']) ? $value['WCNM']: '' ?></td>
+                                    <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROPSSORDERNO']) ? $value['JOBPROPSSORDERNO']: '' ?></td>
+                                    <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROPSSNO']) ? $value['JOBPROPSSNO']: '' ?></td>
+                                    <td class="h-6 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['PROITEMCD']) ? $value['PROITEMCD']: '' ?></td>
+                                    <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['ITEMNM']) ? $value['ITEMNM']: '' ?></td>
+                                    <td class="h-6 pr-2 text-sm border border-slate-700 text-right whitespace-nowrap"><?=isset($value['COMPQTY']) ? $value['COMPQTY']: '' ?></td>
+                                    <td class="h-6 text-sm border border-slate-700 text-center whitespace-nowrap"><?=isset($value['PROHOUR']) ? $value['PROHOUR']: '' ?></td>
+                                    <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($value['JOBPROREM']) ? $value['JOBPROREM']: '' ?></td>
                                 </tr><?php
                             }
                         }

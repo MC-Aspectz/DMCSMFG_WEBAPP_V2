@@ -22,15 +22,6 @@ SEARCHSUPPLIER.click(function(e) { e.preventDefault(); winopened = window.open($
 ASSETACCGUIDE.click(function(e) { e.preventDefault(); winopened = window.open($('#sessionUrl').val() + '/guide/'+ $('#comcd').val() +'/ASSETACCGUIDE/index.php?page=ACCBOK_ENTRY10', 'authWindow', 'width=1200,height=600');});
 SEARCHACCOUNT.click(function(e) { e.preventDefault(); winopened = window.open($('#sessionUrl').val() + '/guide/'+ $('#comcd').val() +'/SEARCHACCOUNT/index.php?page=ACCBOK_ENTRY10', 'authWindow', 'width=1200,height=600');});
 
-const search_icon = [ASSETGUIDE, SEARCHDIVISION, SEARCHSUPPLIER, ASSETACCGUIDE, SEARCHACCOUNT];
-
-for(const icon of search_icon) {
-    icon.click(function () {
-        keepData();
-    });
-};
-
-// onchange
 const BOOKORDERNO = $("#BOOKORDERNO"); 
 const DIVISIONCD = $("#DIVISIONCD");
 const CSS_TYPE = $("#CSS_TYPE");
@@ -45,27 +36,24 @@ const UPRICE = $("#UPRICE");
 const ASSETNM = $("#ASSETNM");
 const LIFEY = $("#LIFEY");
 
-// onchange
-const input_search = [BOOKORDERNO, DIVISIONCD, CSS_TYPE, ASSETACC, SUPPLIERCD, ACC_CD];
+
+const input_search = [DIVISIONCD, CSS_TYPE, ASSETACC, SUPPLIERCD, ACC_CD];
+
+const search_icon = [ASSETGUIDE, SEARCHDIVISION, SEARCHSUPPLIER, ASSETACCGUIDE, SEARCHACCOUNT];
+
+for(const icon of search_icon) {
+    icon.click(function () {
+        keepData();
+    });
+};
 
 for (const input of input_search) {
     input.on('keyup change', function (e) {
-      if (e.type === 'change') {
-            $('#loading').show();
-        } else if (e.key === 'Enter' || e.keyCode === 13) {
-            $('#loading').show();
+        if ((e.type === 'change') || (e.key === 'Enter' || e.keyCode === 13)) {
+            keepdata();
         }
     });
 }
-
-async function getSearch(code, value) {
-    $('#loading').show();
-    return window.location.href = $('#sessionUrl').val() + '/app/'+ $('#comcd').val() +'/850/ACCBOK_ENTRY10/index.php?'+code+'=' + value;
-}
-
-CLOSEPAGE.click(function () {
-  return programDelete();
-});
 
 COMMIT.click(function() {
     // check validate form
@@ -92,111 +80,71 @@ ASVC.click(function() {
 });
 
 BOOKORDERNO.on('keyup change', async function(e) {
-    if(e.type === 'change') {
-        window.location.href="index.php?BOOKORDERNO=" + BOOKORDERNO.val();
-    } else if( e.key === 'Enter' || e.keyCode === 13) {
-        window.location.href="index.php?BOOKORDERNO=" + BOOKORDERNO.val();
+    if ((e.type === 'change') || (e.key === 'Enter' || e.keyCode === 13)) {
+        return getSearch('BOOKORDERNO', BOOKORDERNO.val());
     }
     if(BOOKORDERNO.val() == '') unsetSession(form);
 });
 
 DIVISIONCD.on('keyup change', async function(e) {
-    if(e.type === 'change') {
-        keepData();
-        await getDiv(DIVISIONCD.val());
-    } else if( e.key === 'Enter' || e.keyCode === 13) {
-        keepData();
-        await getDiv(DIVISIONCD.val());
+    if ((e.type === 'change') || (e.key === 'Enter' || e.keyCode === 13)) {
+        return getElement('DIVISIONCD', DIVISIONCD.val());
     }
 });
 
 SUPPLIERCD.on('keyup change', async function(e) {
-    if(e.type === 'change') {
-        keepData();
-        await get_supllier(SUPPLIERCD.val());
-    } else if( e.key === 'Enter' || e.keyCode === 13) {
-        keepData();
-        await get_supllier(SUPPLIERCD.val());
+    if ((e.type === 'change') || (e.key === 'Enter' || e.keyCode === 13)) {
+        return getElement('SUPPLIERCD', SUPPLIERCD.val());
     }
 });
 
 ASSETACC.on('keyup change', async function(e) {
-    if(e.type === 'change') {
-        keepData();
-        await get_assetn();
-    } else if( e.key === 'Enter' || e.keyCode === 13) {
-        keepData();
-        await get_assetn();
+    if ((e.type === 'change') || (e.key === 'Enter' || e.keyCode === 13)) {
+        return getElement('ASSETACC', ASSETACC.val());
     }
 });
 
 ACC_CD.on('keyup change', async function(e) {
-    if(e.type === 'change') {
-        keepData();
-        await get_acc();
-    } else if( e.key === 'Enter' || e.keyCode === 13) {
+    if ((e.type === 'change') || (e.key === 'Enter' || e.keyCode === 13)) {
         keepData();
         await get_acc();
     }
 });
 
-async function get_acc() {
+async function getSearch(code, value) {
+    $('#loading').show();
+    return window.location.href = $('#sessionUrl').val() + '/app/'+ $('#comcd').val() +'/850/ACCBOK_ENTRY10/index.php?'+code+'=' + value;
+}
+
+async function getElement(code, value) {
+    $('#loading').show();
+    var supcurdisp = document.getElementsByName('SUPCURDISP');
     const data = new FormData(form);
-    data.append('action', 'get_acc');
-    await axios.post('../ACCBOK_ENTRY10/function/index_x.php', data)
+    data.append(code, value);
+    data.append('action', code);
+    await axios.post('../ACC_PURCHSEORDERENTRY_MFG/function/index_x.php', data)
     .then(response => {
         // console.log(response.data);
-        if(response.status == '200') {
-            $("#loading").hide();
-            if(jQuery.type(response.data) === 'object') {
-                $("#ACC_CD").val(response.data['ACC_CD']);
-                $("#ACC_NM").val(response.data['ACC_NM']);
-            } else {
-                return actionDialog(4);
+        let result = response.data;
+        if(objectArray(result)) {
+            $.each(result, function(key, value) {
+                // console.log(key, '=>', value);
+                if(document.getElementById(''+key+'')) {
+                    document.getElementById(''+key+'').value = value;
+                }
+            });
+        } else {
+            if(code == 'ACC_CD') {
+                actionDialog(4);
             }
         }
+        unRequired();
+        document.activeElement.blur();
+        document.getElementById('loading').style.display = 'none';
     })
     .catch(e => {
         // console.log(e);
-        $("#loading").hide();
-    });
-}
-
-async function getDiv(DIVISIONCD) {
-    const data = new FormData(form);
-    data.append('action', 'getDiv');
-    data.append('DIVISIONCD', DIVISIONCD);
-    await axios.post('../ACCBOK_ENTRY10/function/index_x.php', data)
-    .then(response => {
-        // console.log(response.data);
-        if(response.status == '200') {
-            $("#loading").hide();
-            $("#DIVISIONCD").val(response.data['DIVISIONCD']);
-            $("#DIVISIONNAME").val(response.data['DIVISIONNAME']);
-        }
-    })
-    .catch(e => {
-        // console.log(e);
-        $("#loading").hide();
-    });
-}
-
-async function get_supllier(SUPPLIERCD) {
-    const data = new FormData(form);
-    data.append('action', 'get_supllier');
-    data.append('SUPPLIERCD', SUPPLIERCD);
-    await axios.post('../ACCBOK_ENTRY10/function/index_x.php', data)
-    .then(response => {
-        // console.log(response.data);
-        if(response.status == '200') {
-            $("#loading").hide();
-            $("#SUPPLIERCD").val(response.data['SUPPLIERCD']);
-            $("#SUPPLIERNAME").val(response.data['SUPPLIERNAME']);
-        }
-    })
-    .catch(e => {
-        // console.log(e);
-        $("#loading").hide();
+        document.getElementById('loading').style.display = 'none';
     });
 }
 
@@ -215,25 +163,6 @@ async function get_exrate() {
             document.getElementById('I_CURRENCY').value = response.data['I_CURRENCY'];
             document.getElementById('I_CURRENCYx').value = response.data['I_CURRENCY'];
             calcamt();
-        }
-    })
-    .catch(e => {
-        // console.log(e);
-        $("#loading").hide();
-    });
-}
-
-async function get_assetn() {
-    const data = new FormData(form);
-    data.append('action', 'get_assetn');
-    data.append('ASSETACC', $('#ASSETACC').val());
-    await axios.post('../ACCBOK_ENTRY10/function/index_x.php', data)
-    .then(response => {
-        // console.log(response.data);
-        if(response.status == '200') {
-            $("#loading").hide();
-            $("#ASSETACC").val(response.data['ASSETACC']);
-            $("#ASSETNA").val(response.data['ASSETNA']);
         }
     })
     .catch(e => {

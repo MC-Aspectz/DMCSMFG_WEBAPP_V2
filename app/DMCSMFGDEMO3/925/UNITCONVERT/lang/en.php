@@ -7,7 +7,7 @@
 	        'yes' => 'Yes',
 	        'no' => 'No',
 
-            'success' => 'Update Success !',
+            'success' => 'Completed success !',
 
 	        'question1' => 'Do you want to end this process ?',
 

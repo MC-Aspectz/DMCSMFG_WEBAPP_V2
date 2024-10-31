@@ -183,7 +183,7 @@ if(empty($loadApp)) {
 $data['TXTLANG'] = get_sys_lang($loadApp);
 $data['DRPLANG'] = get_sys_dropdown($loadApp);
 $branchkbn = $data['DRPLANG']['BRANCH_KBN'];
-$unit = $data['DRPLANG']['UNIT'];
+$UNIT = $data['DRPLANG']['UNIT'];
 setSessionData('UNIT', $UNIT);
 // print_r($data['SYSPVL']);
 // echo '<pre>';

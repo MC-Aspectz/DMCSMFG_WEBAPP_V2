@@ -224,7 +224,7 @@
                     </div>
                 </div>
 
-                <div id="table-area" class="overflow-scroll px-2 block h-[40%]">
+                <div id="table-area" class="overflow-scroll px-2 block h-[33%]">
                     <table id="table" class="purchaseOrder_table w-full border-collapse border border-slate-500">
                         <thead class="sticky top-0 z-20 bg-gray-50">
                             <tr class="border border-gray-600">
@@ -515,12 +515,12 @@
         const tablearea = document.getElementById('table-area');
         details.addEventListener('toggle', function() {
             if (!details.open) {
-                tablearea.classList.remove('h-[40%]');
-                tablearea.classList.add('h-[60%]');
+                tablearea.classList.remove('h-[33%]');
+                tablearea.classList.add('h-[53%]');
                 maxrow = 15;
             } else {
-                tablearea.classList.remove('h-[60%]');
-                tablearea.classList.add('h-[40%]');
+                tablearea.classList.remove('h-[53%]');
+                tablearea.classList.add('h-[33%]');
                 maxrow = 8;
             }
             emptyRows(maxrow);

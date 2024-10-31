@@ -121,22 +121,19 @@ async function clearForm(form) {
     var textarea = form.getElementsByTagName('textarea');
     for (var i = 0; i < textarea.length; i++) { textarea[i].value = ''; }
 
-  // clearing table empty Row
-  $("#table_result > tbody > tr").remove();
-  for (var i = 0; i < 10; i++) {
-    $("#table_result tbody").append(
-      '<tr class="row-empty" id="rowId' +
-        i +
-        '">' +
-        '<td class="h-6 border border-slate-700"></td>' +
-        '<td class="h-6 border border-slate-700"></td>' +
-        '<td class="h-6 border border-slate-700"></td></tr>'
-    );
-  }
+    // clearing table empty Row
+    $('#table_result > tbody > tr').remove();
+    for (var i = 0; i < 10; i++) {
+        $('#table_result tbody').append('<tr class="row-empty" id="rowId' + i +'">' +
+                                            '<td class="h-6 border border-slate-700"></td>' +
+                                            '<td class="h-6 border border-slate-700"></td>' +
+                                            '<td class="h-6 border border-slate-700"></td></tr>'
+        );
+    }
 
-  document.getElementById("rowcount").innerHTML = "0";
+    document.getElementById('rowcount').innerHTML = '0';
 
-  return false;
+    return false;
 }
 
 csv.click(function () {
