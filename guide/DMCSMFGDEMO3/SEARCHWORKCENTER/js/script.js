@@ -1,9 +1,8 @@
-// Action Button
+// Parameter
+var WCCD;
+var isItem = false;
 var page = $('#page').val();
 var index = $('#index').val();
-
-var isItem = false;
-var WCCD;
 $('table#table_result tr').click(function () {
     $('table#table_result tr').removeAttr('id')
 
@@ -14,10 +13,10 @@ $('table#table_result tr').click(function () {
     if(item.eq(0).text() != 'undefined') {
         isItem = true;
         WCCD = item.eq(1).text();
-    }
 
-    $('#WC_CODE').html(item.eq(1).text());
-    $('#WORK_CENTER_NAME').html(item.eq(2).text());
+        $('#WC_CODE').html(item.eq(1).text());
+        $('#WORK_CENTER_NAME').html(item.eq(2).text());
+    }
     
     $("#select_item").on('click', function() {
         $('#loading').show();
@@ -49,7 +48,7 @@ $('#back').on('click', function() {
 
 function HandleResult(result) {
     try {
-        if(page == 'PRODUCTIONORDERENTRY') { 
+        if(page == 'PRODUCTIONORDERENTRY' || page == 'PRODUCTIONORDERENTRY_MFG') { 
             window.opener.HandlePopupResult('WCCD', result);
         } else if(page == 'JOBRESULTVW') {
             window.opener.HandlePopupResult('I_WCCD', result);
@@ -93,9 +92,10 @@ async function clearForm(form) {
     // clearing table empty Row
     $('#table_result > tbody > tr').remove();
     for (var i = 0; i < 10; i++) {
-        $('#table_result tbody').append('<tr class="flex w-full p-0 divide-x">' +
-                                        '<td class="h-6 w-4/12"></td>' +
-                                        '<td class="h-6 w-8/12"></td></tr>');
+        $('#table_result tbody').append('<tr class="row-empty" id="rowId' + i +'">' +
+                                            '<td class="h-6 border border-slate-700"></td>' +
+                                            '<td class="h-6 border border-slate-700"></td></tr>'
+        );
     }
 
     document.getElementById('rowcount').innerHTML = '0';

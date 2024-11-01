@@ -21,7 +21,7 @@
     <input type="hidden" id="page" name="page" value="<?=!empty($_GET['page']) ? $_GET['page'] : ''; ?>"/>
     <input type="hidden" id="index" name="index" value="<?=!empty($_GET['index']) ? $_GET['index'] : ''; ?>"/>
     <input type="hidden" id="LOCTYP" name="LOCTYP" value="<?=!empty($_GET['LOCTYP']) ? $_GET['LOCTYP'] : $_POST['P1'] ?? ''; ?>"/>
-    <form class="w-full h-screen p-2" method="POST" id="searchProOrPur" name="searchProOrPur" onkeydown="if(event.keyCode == 13) { event.preventDefault(); return false;}">
+    <form class="w-full h-screen p-2" method="POST" id="searchProOrPurMFG" name="searchProOrPurMFG" onkeydown="if(event.keyCode == 13) { event.preventDefault(); return false;}">
         <div class="flex mb-1">
             <div class="flex w-8/12">
                 <label class="text-color block text-sm w-3/12 pr-2 pt-1"><?=$lang['order']; ?></label>
@@ -102,12 +102,12 @@
                 if (!empty($tdata)) { $minrow = count($tdata);
                     foreach ($tdata as $item) {  ?>
                         <tr class="divide-y divide-gray-200 csv" id="rowId<?=$key?>">
-                            <td class="h-6 w-1/12 text-sm border border-slate-700 text-center"><?=isset($item['ODRNO']) ? $item['ODRNO']: '' ?></td>
-                            <td class="h-6 w-1/12 text-sm border border-slate-700 text-center"><?=isset($item['ISSUEDT']) ? $item['ISSUEDT']: '' ?></td>
-                            <td class="h-6 w-1/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['IMCD']) ? $item['IMCD']: '' ?></td>
-                            <td class="h-6 w-2/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['IMNAME']) ? $item['IMNAME']: '' ?></td>
-                            <td class="h-6 w-2/12 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['SALENOLN']) ? $item['SALENOLN']: '' ?></td>
-                            <td class="h-6 w-1/12 pl-2 text-sm border border-slate-700 text-left"><?=isset($item['DUEDT']) ? $item['DUEDT']: '' ?></td>
+                            <td class="h-6 text-sm border border-slate-700 text-center"><?=isset($item['ODRNO']) ? $item['ODRNO']: '' ?></td>
+                            <td class="h-6 text-sm border border-slate-700 text-center"><?=isset($item['ISSUEDT']) ? $item['ISSUEDT']: '' ?></td>
+                            <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['IMCD']) ? $item['IMCD']: '' ?></td>
+                            <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['IMNAME']) ? $item['IMNAME']: '' ?></td>
+                            <td class="h-6 pl-2 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['SALENOLN']) ? $item['SALENOLN']: '' ?></td>
+                            <td class="h-6 pl-2 text-sm border border-slate-700 text-left"><?=isset($item['DUEDT']) ? $item['DUEDT']: '' ?></td>
                         </tr><?php
                     }
                 }

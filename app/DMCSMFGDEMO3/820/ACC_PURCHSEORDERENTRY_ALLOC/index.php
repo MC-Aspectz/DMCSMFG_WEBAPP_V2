@@ -216,14 +216,6 @@
                     <!-- End Card -->
                 </div>
 
-
-                <div class="flex mx-2">
-                    <div class="flex w-full border border-gray-300 p-1">
-                        <button type="button" class="inline-flex items-center justify-center w-10 h-8 mr-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800 rounded-lg" id="add-row">+</button>
-                        <button type="button" class="inline-flex items-center justify-center w-10 h-8 mr-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800 rounded-lg" id="delete-row">x</button>
-                    </div>
-                </div>
-
                 <div id="table-area" class="overflow-scroll px-2 block h-[33%]">
                     <table id="table" class="purchaseOrder_table w-full border-collapse border border-slate-500">
                         <thead class="sticky top-0 z-20 bg-gray-50">
@@ -263,16 +255,8 @@
                                     <tr id="rowId<?=$key?>">
                                         <td class="row-id text-center max-w-4 text-sm border border-slate-700" id="ROWNO<?=$key?>" name="ROWNO[]"><?=$key?></td>
                                         <td class="max-w-24 text-sm border border-slate-700">
-                                            <div class="relative z-10">
-                                                <input type="text" class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300"
-                                                        id="ITEMCD<?=$key?>" name="ITEMCD[]" onchange="findItemCode(event, <?=$key?>);" onkeyup="findItemCode(event, <?=$key?>);" value="<?=$value['ITEMCD'];?>">
-                                                <a class="search-tag absolute top-0 end-0 h-6 py-1.5 px-3 rounded-e-xl border focus:ring-4 focus:outline-none"
-                                                    id="searchitem<?=$key?>" onclick="searchItemIndex(<?=$key?>);">
-                                                    <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 20 20">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                                    </svg>
-                                                </a>
-                                            </div>
+                                            <input type="text" class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300 read"
+                                                id="ITEMCD<?=$key?>" name="ITEMCD[]" value="<?=isset($value['ITEMCD']) ? $value['ITEMCD']: '';?>">
                                         </td>
                                         <td class="max-w-32 text-sm border border-slate-700">
                                             <input class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300"
@@ -425,6 +409,16 @@
                     <!-- End Card -->
                 </div>
 
+                <input type="hidden" id="PCAPPCD" name="PCAPPCD" value="<?=isset($data['PCAPPCD']) ? $data['PCAPPCD']: ''; ?>">
+                <input type="hidden" id="PCALLOCORDERTYP" name="PCALLOCORDERTYP" value="<?=isset($data['PCALLOCORDERTYP']) ? $data['PCALLOCORDERTYP']: ''; ?>">
+                <input type="hidden" id="PCALLOCOR" name="PCALLOCOR" value="<?=isset($data['PCALLOCOR']) ? $data['PCALLOCOR']: ''; ?>">
+                <input type="hidden" id="PCALLOCORDERLN" name="PCALLOCORDERLN" value="<?=isset($data['PCALLOCORDERLN']) ? $data['PCALLOCORDERLN']: ''; ?>">
+                <input type="hidden" id="PCALLOCLN" name="PCALLOCLN" value="<?=isset($data['PCALLOCLN']) ? $data['PCALLOCLN']: ''; ?>">
+                <input type="hidden" id="PCITEMCD" name="PCITEMCD" value="<?=isset($data['PCITEMCD']) ? $data['PCITEMCD']: ''; ?>">
+                <input type="hidden" id="TMPPURQTY" name="TMPPURQTY" value="<?=isset($data['TMPPURQTY']) ? $data['TMPPURQTY']: ''; ?>">
+                <input type="hidden" id="TMPPURUNITPRC" name="TMPPURUNITPRC" value="<?=isset($data['TMPPURUNITPRC']) ? $data['TMPPURUNITPRC']: ''; ?>">
+                <input type="hidden" id="TMPPURAMT" name="TMPPURAMT" value="<?=isset($data['TMPPURAMT']) ? $data['TMPPURAMT']: ''; ?>">
+
                 <div class="flex">
                     <div class="flex w-6/12 px-1">
                           <button type="button" class="btn text-color border-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-1 text-center me-2 mb-1" 
@@ -441,6 +435,9 @@
                               onclick="unsetSession(this.form);"><?=checklang('CLEAR')?></button>&emsp;&emsp;
                         <button type="button" id="END" class="btn text-color border-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-1 text-center me-2 mb-1" 
                               onclick="questionDialog(1, '<?=lang('question1');?>', '<?=lang('yes')?>', '<?=lang('no')?>');"><?=checklang('END'); ?></button>
+
+                        <button type="button" id="BACK" class="btn text-color border-2 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-1 text-center me-2 mb-1 hidden"
+                                onclick="return back();"><?=checklang('BACK'); ?></button>
                     </div>
                 </div>
             </form>
@@ -523,87 +520,6 @@
             emptyRows(maxrow);
         })
 
-        var index = 0; var id; 
-        index = '<?php echo (isset($data['ITEM']) ? count($data['ITEM']) : 0); ?>';
-        // console.log(index);
-        $('#add-row').click(function() {
-            index =  $('.row-id').length || 0;
-            // console.log('index before' + index);
-            index ++;  // index += 1; 
-            // console.log('index after' + index);
-            var newRow = $('<tr id=rowId'+index+'>');
-            var cols = '';
-            cols += '<td class="row-id text-center text-sm max-w-4 border border-slate-700" id="ROWNO'+index+'" name="ROWNO[]">'+index+'</td>';
-            cols += '<td class="max-w-24 text-sm border border-slate-700"><div class="relative z-10">' +
-                        '<input type="text" class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300"' +
-                        'id="ITEMCD'+index+'" name="ITEMCD[]" onchange="findItemCode(event,'+index+');" onkeyup="findItemCode(event, '+index+');"/>' +
-                        '<a class="search-tag absolute top-0 end-0 h-6 py-1.5 px-3 rounded-e-xl border focus:ring-4 focus:outline-none"' +
-                            'id="searchitem'+index+'" onclick="searchItemIndex('+index+');">' +
-                            '<svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 20 20">' +
-                                '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>' +
-                            '</svg>' +
-                        '</a>' +
-                    '</div></td>';
-            cols += '<td class="max-w-32 text-sm border border-slate-700"><input class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300"'+
-                    'id="ITEMNAME'+index+'" name="ITEMNAME[]"/></td>';
-            cols += '<td class="max-w-8 text-sm border border-slate-700"><input class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300 text-right"'+
-                    'id="PURQTY'+index+'" name="PURQTY[]" onchange="calculateamt('+index+'); this.value = num2digit(this.value);" '+
-                    'oninput="this.value = stringReplacez(this.value);"/></td>';
-            cols += '<td class="max-w-8 text-sm border border-slate-700">' +
-                    '<input class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300 text-center read" id="ITEMUNITTYP2'+index+'" name="ITEMUNITTYP2[]" readonly/>' +
-                    '<input class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300 text-center read hidden" id="ITEMUNITTYP'+index+'" name="ITEMUNITTYP[]" readonly/></td>';
-            cols += '<td class="max-w-8 text-sm border border-slate-700"><input class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300 text-right"'+
-                    'id="PURUNITPRC'+index+'" name="PURUNITPRC[]" onchange="calculateamt('+index+'); this.value = num2digit(this.value);" '+
-                    'oninput="this.value = stringReplacez(this.value);"/></td>';
-            cols += '<td class="max-w-8 text-sm border border-slate-700"><input class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300 text-right"'+
-                    'id="DISCOUNT'+index+'" name="DISCOUNT[] onchange="calculateamt('+index+'); this.value = num2digit(this.value);" '+
-                    'oninput="this.value = stringReplacez(this.value);"/></td>';
-            cols += '<td class="max-w-8 text-sm border border-slate-700"><input class="text-control text-sm shadow-md border rounded-xl h-6 w-full py-2 px-3 text-gray-700 border-gray-300 text-right read"'+
-                    'id="PURAMT'+index+'" name="PURAMT[]" readonly/></td>';
-            cols += '<td class="hidden"><input class="w-16 read" id="DISCOUNT2'+index+'" name="DISCOUNT2[]" readonly/></td>';
-            cols += '<td class="hidden"><input class="w-16 read" id="VATAMT'+index+'" name="VATAMT[]" readonly/></td>';
-            cols += '<td class="hidden"><input class="w-16 read" id="PRLN'+index+'" name="PRLN[]" readonly/></td>';
-
-            // console.log($(".row-id").length);
-            // console.log($('#rowId'+index+'').closest('tr').attr('id'));
-            if(index <= maxrow) {
-                $('#rowId'+index+'').empty();
-                $('#rowId'+index+'').removeAttr('class', 'row-empty');
-                $('#rowId'+index+'').append(cols);
-            } else {
-                newRow.append(cols);
-                $('table tbody').append(newRow);
-            }
-
-            document.getElementById('rowcount').innerHTML = index;
-            // ----- call Class search-tag -------//
-            searchIcon();
-            // -----------------------------------//
-        });
-        // Find and remove selected table rows
-        $('#delete-row').click(function(){
-            // document.getElementById('table').deleteRow(index);
-            // console.log(id);
-            if(index > 0 && id != null) {
-                // let rows = document.getElementsByTagName('tr');
-                $('#rowId'+id).closest('tr').remove();
-                if(index <= maxrow) {
-                    emptyRow(index);
-                }
-                index --;   // index -= 1;
-                $('.row-id').each(function (i) {
-                    // console.log(i);
-                    // rows[id].id = 'rowId' + index;
-                    $(this).text(i+1);
-                }); 
-                changeRowIds();
-                unsetSessionItem(id);
-                id = null;
-                // console.log(index);
-            }
-            keepData(); keepItemData();
-        });
-
         $(document).on('click', '.purchaseOrder_table tr', function(event){
             // let rowId = $(this).closest('tr').attr('id');
             // console.log(rowId);
@@ -619,17 +535,6 @@
             }
         });
     });
-
-    function findItemCode(event, index) {
-        if(SUPPLIERCD.val() == '') {
-            document.getElementById('ITEMCD' + index + '').value = '';
-            vlidationSupplier();
-            return false;
-        }
-        if ((event.type === 'change') || (event.key === 'Enter' || event.keyCode === 13)) {
-            return getElementIndex('ITEMCD', $('#ITEMCD'+index+'').val(), index);
-        }
-    }
 
     function HandlePopupResult(code, result) {
         // console.log("result of popup is: " + code + ' : ' + result);

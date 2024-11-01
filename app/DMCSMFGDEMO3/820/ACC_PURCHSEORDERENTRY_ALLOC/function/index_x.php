@@ -151,7 +151,6 @@ if(!empty($_POST)) {
         if ($_POST['action'] == 'unsetsession') { unsetSessionData(); }
         if ($_POST['action'] == 'keepdata') { setOldValue(); }
         if ($_POST['action'] == 'keepItemData') { setItemValue(); }
-        if ($_POST['action'] == 'unsetsessionItem') {  unsetSesstionItem($_POST['lineIndex']); }
         if ($_POST['action'] == 'DIVISIONCD') { getDiv(); }
         if ($_POST['action'] == 'SUPPLIERCD') { getSupplier(); }
         if ($_POST['action'] == 'STAFFCD') { getStaff(); }
@@ -160,7 +159,9 @@ if(!empty($_POST)) {
         if ($_POST['action'] == 'commit') { commit(); }
         if ($_POST['action'] == 'cancel') { cancel(); }
         if ($_POST['action'] == 'print') { printed(); }
+        if ($_POST['action'] == 'insertBak') { insertBak(); }
     }
+    if(isset($_POST['ALLOCORDERFLG']) == '2') { setOrderBOMEntry(); }
 }
 //--------------------------------------------------------------------------------
 
@@ -178,6 +179,7 @@ if(empty($loadApp)) {
     $loadApp = $syslogic->getLoadApp($_SESSION['APPCODE']);
     setSystemData($_SESSION['APPCODE'], $loadApp);
 }
+$load = $javaFunc->load();
 $data['TXTLANG'] = get_sys_lang($loadApp);
 $data['DRPLANG'] = get_sys_dropdown($loadApp);
 $BRANCH_KBN = $data['DRPLANG']['BRANCH_KBN'];
@@ -190,6 +192,9 @@ setSessionData('UNIT', $UNIT);
 // echo '<pre>';
 // print_r($data['DRPLANG']);
 // echo '</pre>';
+echo '<pre>';
+print_r($load);
+echo '</pre>';
 // --------------------------------------------------------------------------//
 function getDiv() {
     $javafunc = new AccPurchseOrderEntryMFG;
@@ -296,6 +301,11 @@ function commit() {
                     'DISCRATE' => $_POST['DISCRATE'],
                     'VATRATE' => $_POST['VATRATE'],
                     'VATAMOUNT1' => $_POST['VATAMOUNT1'],
+                    'PCAPPCD' => isset($_POST['PCAPPCD']) ? $_POST['PCAPPCD']: '',
+                    'PCALLOCORDERTYP' => isset($_POST['PCALLOCORDERTYP']) ? $_POST['PCALLOCORDERTYP']: '',
+                    'PCALLOCORDERNO' => isset($_POST['PCALLOCORDERNO']) ? $_POST['PCALLOCORDERNO']: '',
+                    'PCALLOCORDERLN' => isset($_POST['PCALLOCORDERLN']) ? $_POST['PCALLOCORDERLN']: '',
+                    'PCALLOCLN' => isset($_POST['PCALLOCLN']) ? $_POST['PCALLOCLN']: '',
                     'DATA' => $RowParam);
     // print_r($param);
     $commit = $cmtfunc->commit($param);
@@ -307,6 +317,89 @@ function cancel() {
     $cancelfunc = new AccPurchseOrderEntryMFG;
     $cancel = $cancelfunc->cancel($_POST['PONO']);
     unsetSessionData();
+}
+
+function insertBak() {
+    $RowParam = array();
+    $insfunc = new AccPurchseOrderEntryMFG;
+    for ($i = 0 ; $i < count($_POST['ITEMCD']); $i++) { 
+        if($_POST['ITEMCD'][$i] != '' && isset($_POST['ITEMCD'][$i])) {
+            $RowParam[] = array('ROWNO' => $i + 1,
+                                'ITEMCD' => $_POST['ITEMCD'][$i],
+                                'ITEMNAME' => $_POST['ITEMNAME'][$i],
+                                'PURQTY' => isset($_POST['PURQTY'][$i]) ? implode(explode(',', $_POST['PURQTY'][$i])): '0.00',
+                                'ITEMUNITTYP' => $_POST['ITEMUNITTYP'][$i],
+                                'PURUNITPRC' => isset($_POST['PURUNITPRC'][$i]) ? implode(explode(',', $_POST['PURUNITPRC'][$i])): '0.00',
+                                'DISCOUNT' => isset($_POST['DISCOUNT'][$i]) ? implode(explode(',', $_POST['DISCOUNT'][$i])): '0.00',
+                                'PURAMT' => isset($_POST['PURAMT'][$i]) ? implode(explode(',', $_POST['PURAMT'][$i])): '0.00',
+                                'DISCOUNT2' => $_POST['DISCOUNT2'][$i],
+                                'VATAMT' => $_POST['VATAMT'][$i],
+                                'PRLN' => $_POST['PRLN'][$i]);
+        }
+    }
+    // print_r($RowParam);
+    $param = array( 'PONO' => $_POST['PONO'],
+                    'PRNO' => $_POST['PRNO'],
+                    'ISSUEDT' => !empty($_POST['ISSUEDT']) ? str_replace('-', '', $_POST['ISSUEDT']): '',
+                    'DIVISIONCD' => $_POST['DIVISIONCD'],
+                    'SUPPLIERCD' => $_POST['SUPPLIERCD'],
+                    'PURDUEDT' => !empty($_POST['PURDUEDT']) ? str_replace('-', '', $_POST['PURDUEDT']): '',
+                    'SUPCURCD' => $_POST['SUPCURCD'],
+                    'SUPPLIERCONTACT' => $_POST['SUPPLIERCONTACT'],
+                    'SUPPLIERTEL' => $_POST['SUPPLIERTEL'],
+                    'SUPPLIERFAX' => $_POST['SUPPLIERFAX'],
+                    'STAFFCD' => $_POST['STAFFCD'],
+                    'ADD03' => $_POST['ADD03'],
+                    'ADD04' => $_POST['ADD04'],
+                    'ADD05' => $_POST['ADD05'],
+                    'ADD06' => $_POST['ADD06'],
+                    'ADD07' => $_POST['ADD07'],
+                    'ADD08' => $_POST['ADD08'],
+                    'DISCRATE' => $_POST['DISCRATE'],
+                    'VATRATE' => $_POST['VATRATE'],
+                    'VATAMOUNT1' => $_POST['VATAMOUNT1'],
+                    'PCAPPCD' => isset($_POST['PCAPPCD']) ? $_POST['PCAPPCD']: '',
+                    'PCALLOCORDERTYP' => isset($_POST['PCALLOCORDERTYP']) ? $_POST['PCALLOCORDERTYP']: '',
+                    'PCALLOCORDERNO' => isset($_POST['PCALLOCORDERNO']) ? $_POST['PCALLOCORDERNO']: '',
+                    'PCALLOCORDERLN' => isset($_POST['PCALLOCORDERLN']) ? $_POST['PCALLOCORDERLN']: '',
+                    'PCALLOCLN' => isset($_POST['PCALLOCLN']) ? $_POST['PCALLOCLN']: '',
+                    'DATA' => $RowParam);
+    // print_r($param);
+    $commit = $insfunc->commit($param);
+    echo json_encode($commit);
+    unsetSessionData();
+}
+
+ // -FAPPCD<RTNDM\>ACC_PURCHSEORDERENTRY_ALLOC<RTNDM\>PCAPPCD<RTNDM\>ORDERBMENTRY_MFG<RTNDM\>PCITEMCD<RTNDM\>WIP-3<RTNDM\>TMPPURQTY<RTNDM\>15000.000000000<RTNDM\>TMPPURUNITPRC<RTNDM\>0.0000000000<RTNDM\>TMPPURAMT<RTNDM\>0.0000000000000000000<RTNDM\>VATRATE<RTNDM\>7.00<RTNDM\>PONO<RTNDM\><RTNDM\>SERVICECLASS<RTNDM\>acc.THA.AccPurOrderEntry_MFG.loadItem<RTNDM\>SYSLANG<RTNDM\>EN<RTNDM\>SYSLLANG<RTNDM\>EN<RTNDM\>SYSLANG2<RTNDM\>0<RTNDM\>SYSLLANG2<RTNDM\>0<RTNDM\>SYSLOGINUSER<RTNDM\>dev05<RTNDM\>LOGINSTAFFCD<RTNDM\>dev05<RTNDM\>SYSLLOGINUSER<RTNDM\>dev05<RTNDM\>SYSDATETYPE<RTNDM\>0<RTNDM\>SYSLDATETYPE<RTNDM\>0<RTNDM\>SYSAPPNAME<RTNDM\>DS<RTNDM\>SYSLAPPNAME<RTNDM\>DS<RTNDM\>SYSCOMPUTERNAME<RTNDM\>Windows 8<RTNDM\>SYSLCOMPUTERNAME<RTNDM\>Windows 8<RTNDM\>SYSCOMCD<RTNDM\>DMCSMFGDEMO3<RTNDM\>SYSCOMPWD<RTNDM\>20160711<RTNDM\>MAXROWRETURN<RTNDM\>
+
+// FAPPCD<RTNDM\>ACC_PURCHSEORDERENTRY_ALLOC<RTNDM\>PCAPPCD<RTNDM\>ORDERBMENTRY_MFG<RTNDM\>PCITEMCD<RTNDM\>RMT01<RTNDM\>TMPPURQTY<RTNDM\>9000.000000000<RTNDM\>TMPPURUNITPRC<RTNDM\>1500.0000000000<RTNDM\>TMPPURAMT<RTNDM\>13500000.0000000000000000000<RTNDM\>VATRATE<RTNDM\>7.00<RTNDM\>PONO<RTNDM\><RTNDM\>SERVICECLASS<RTNDM\>acc.THA.AccPurOrderEntry_MFG.loadItem<RTNDM\>SYSLANG<RTNDM\>EN<RTNDM\>SYSLLANG<RTNDM\>EN<RTNDM\>SYSLANG2<RTNDM\>0<RTNDM\>SYSLLANG2<RTNDM\>0<RTNDM\>SYSLOGINUSER<RTNDM\>dev05<RTNDM\>LOGINSTAFFCD<RTNDM\>dev05<RTNDM\>SYSLLOGINUSER<RTNDM\>dev05<RTNDM\>SYSDATETYPE<RTNDM\>0<RTNDM\>SYSLDATETYPE<RTNDM\>0<RTNDM\>SYSAPPNAME<RTNDM\>DS<RTNDM\>SYSLAPPNAME<RTNDM\>DS<RTNDM\>SYSCOMPUTERNAME<RTNDM\>Windows 8<RTNDM\>SYSLCOMPUTERNAME<RTNDM\>Windows 8<RTNDM\>SYSCOMCD<RTNDM\>DMCSMFGDEMO3<RTNDM\>SYSCOMPWD<RTNDM\>20160711<RTNDM\>MAXROWRETURN<RTNDM\>
+
+ // -FAPPCD<RTNDM\>ACC_PURCHSEORDERENTRY_ALLOC<RTNDM\>PCAPPCD<RTNDM\>ORDERBMENTRY_MFG<RTNDM\>PCITEMCD<RTNDM\><RTNDM\>TMPPURQTY<RTNDM\><RTNDM\>TMPPURUNITPRC<RTNDM\><RTNDM\>TMPPURAMT<RTNDM\><RTNDM\>VATRATE<RTNDM\>7.00<RTNDM\>PONO<RTNDM\>PD241100003<RTNDM\>SERVICECLASS<RTNDM\>acc.THA.AccPurOrderEntry_MFG.loadItem<RTNDM\>SYSLANG<RTNDM\>EN<RTNDM\>SYSLLANG<RTNDM\>EN<RTNDM\>SYSLANG2<RTNDM\>0<RTNDM\>SYSLLANG2<RTNDM\>0<RTNDM\>SYSLOGINUSER<RTNDM\>dev05<RTNDM\>LOGINSTAFFCD<RTNDM\>dev05<RTNDM\>SYSLLOGINUSER<RTNDM\>dev05<RTNDM\>SYSDATETYPE<RTNDM\>0<RTNDM\>SYSLDATETYPE<RTNDM\>0<RTNDM\>SYSAPPNAME<RTNDM\>DS<RTNDM\>SYSLAPPNAME<RTNDM\>DS<RTNDM\>SYSCOMPUTERNAME<RTNDM\>Windows 8<RTNDM\>SYSLCOMPUTERNAME<RTNDM\>Windows 8<RTNDM\>SYSCOMCD<RTNDM\>DMCSMFGDEMO3<RTNDM\>SYSCOMPWD<RTNDM\>20160711<RTNDM\>MAXROWRETURN<RTNDM\>
+ 
+function setOrderBOMEntry() {
+    $javafunc = new AccPurchseOrderEntryMFG;
+    print_r($_POST);
+
+    // PCAPPCD,PCITEMCD,TMPPURQTY,TMPPURUNITPRC,TMPPURAMT,VATRATE,PONO
+
+    $param = array( 'PCAPPCD' => isset($_POST['PFAPPCD']) ? $_POST['PFAPPCD']: 'ORDERBMENTRY_MFG',
+                    'ALLOCORDERFLG' => isset($_POST['ALLOCORDERFLG']) ? $_POST['ALLOCORDERFLG']: '',
+                    'PCITEMCD' => isset($_POST['ITEMCD']) ? $_POST['ITEMCD']: '',
+                    'TMPPURQTY' => isset($_POST['ODRQTY']) ? $_POST['ODRQTY']: '',
+                    'ALLOCQTY' => isset($_POST['ALLOCQTY']) ? $_POST['ALLOCQTY']: '',
+                    'ALLOCPURORDERNOLN' => isset($_POST['ALLOCPURORDERNOLN']) ? $_POST['ALLOCPURORDERNOLN']: '',
+                    'ALLOCORDERTYP' => !empty($_POST['ALLOCORDERTYP']) ? $_POST['ALLOCORDERTYP']: '',
+                    'PONO' => !empty($_POST['ALLOCORDERNO']) ? $_POST['ALLOCORDERNO']: '');
+    $query = $javafunc->loadItem($param);
+    echo '<pre>';
+    print_r($query);
+    echo '</pre>';
+    if(!empty($query)) {
+        $data = $query;
+        setSessionArray($data); 
+    }
+
+    if(checkSessionData()) { $data = getSessionData(); }
 }
 
 function printed() {
@@ -530,7 +623,7 @@ function setSessionArray($arr){
                         'ADD03', 'ADD04', 'ADD05', 'ADD06', 'ADD07', 'ADD08','S_TTL', 'DISCRATE', 'DISCOUNTAMOUNT', 'QUOTEAMOUNT', 'VATRATE', 'VATAMOUNT', 'VATAMOUNT1', 'T_AMOUNT', 'GROUPRT', 
                         'SYSEN_PRNO', 'SYSEN_ISSUEDT', 'SYSEN_PURDUEDT', 'SYSEN_DIVISIONCD', 'SYSEN_SUPPLIERCD', 'SYSEN_SUPCURCD', 'SYSEN_STAFFCD', 'SYSEN_SUPPLIERCONTACT', 'SYSEN_SUPPLIERTEL', 
                         'SYSEN_SUPPLIERFAX', 'SYSEN_ADD03', 'SYSEN_ADD04','SYSEN_ADD05', 'SYSEN_ADD06', 'SYSEN_ADD07', 'SYSEN_ADD08', 'SYSEN_VATRATE', 'SYSEN_DISCRATE', 'SYSEN_COMMIT', 'SYSEN_DVW',
-                        'SYSEN_CANCEL', 'SYSVIS_CANCELLBL', 'SYSVIS_PTRESULTLBL');
+                        'SYSEN_CANCEL', 'SYSVIS_CANCELLBL', 'SYSVIS_PTRESULTLBL', 'ALLOCORDERFLG', 'PCAPPCD', 'PCALLOCORDERTYP', 'PCALLOCOR', 'PCALLOCORDERLN', 'PCALLOCLN', 'PCITEMCD', 'TMPPURQTY', 'TMPPURUNITPRC', 'TMPPURAMT');
     foreach($arr as $k => $v){
         if(in_array($k, $keepField)) {
             setSessionData($k, $v);
@@ -557,16 +650,6 @@ function unsetSessionData($key = '') {
     global $systemName;
     $key = empty($key) ? $systemName : $key;
     return unset_sys_data($key);
-}
-
-function unsetSesstionItem($lineIndex = '') {
-    global $data;
-    global $systemName;
-    unset_sys_array($systemName, 'ITEM', $lineIndex);
-    $data = getSessionData();
-    // print_r(count($data['ITEM']));
-    $data['ITEM'] = array_combine(range(1, count($data['ITEM'])), array_values($data['ITEM']));
-    setSessionArray($data);
 }
 
 function getSystemData($key = '') {

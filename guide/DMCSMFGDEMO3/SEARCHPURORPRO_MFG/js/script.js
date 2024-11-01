@@ -1,9 +1,21 @@
+const SEARCHITEM = $('#SEARCHITEM');
+
+SEARCHITEM.attr('href', $('#sessionUrl').val() + '/guide/'+ $('#comcd').val() +'/SEARCHITEM/index.php?page=SEARCHPURORPRO_MFG');
+ 
+const P1 = $('#P1');
+
+P1.on('keyup change', function(e) {
+    if(e.type === 'change' || (e.key === 'Enter' || e.keyCode === 13)) {
+        $('#loading').show();
+        window.location.href='index.php?P2=' + P2.val();
+    }
+});
+
 var page = $('#page').val();
 var index = $('#index').val();
 
-var ITEMCD;
 var isItem = false;
-var guideURL = $('#sessionUrl').val() + '/guide/'+ $('#comcd').val();
+var ODRNO;
 $('table#table_result tr').click(function () {
     $('table#table_result tr').removeAttr('id')
 
@@ -13,28 +25,21 @@ $('table#table_result tr').click(function () {
 
     if(item.eq(0).text() != 'undefined') {
         isItem = true;
-        ITEMCD = item.eq(1).text();
-        $('#itemcd').html(item.eq(1).text());
-        $('#itemname').html(item.eq(2).text());
-        $('#itempec').html(item.eq(3).text());
-        $('#drowno').html(item.eq(4).text());
-        $('#seach').html(item.eq(5).text());
-        $('#saledate').html(item.eq(6).text());
+        ODRNO = item.eq(0).text();
+        $('#orderno').html(item.eq(0).text());
+        $('#issuedate').html(item.eq(1).text());
+        $('#item').html(item.eq(2).text());
+        $('#itemname').html(item.eq(3).text());
+        $('#salesorderno').html(item.eq(4).text());
+        $('#requireddate').html(item.eq(5).text());
     }
     
     $('#select_item').on('click', function() {
         $('#loading').show();
-        if(page == 'SEARCHPURCHASEORDER' || page == 'SEARCHPRODUCTIONORDER') {
-            return window.location.href = guideURL +'/'+ page +'/index.php?P3='+ ITEMCD;
-        } else if (page == 'SEARCHPURORPRO') {
-            return window.location.href = guideURL +'/'+ page +'/index.php?P1='+ ITEMCD;
-        } else if(page == 'SEARCHSALENOSHIP') {
-            return window.location.href=guideURL +'/SEARCHSALENOSHIP/index.php?ITEMCODE='+ ITEMCD;
-        } else {
-            return HandleResult(ITEMCD)
-        }
+        return HandleResult(ODRNO);
     });
 });
+
 
 $('#view_item').on('click', function() {
     if(isItem) {
@@ -42,26 +47,24 @@ $('#view_item').on('click', function() {
     }
 });    
 
+
 $('#back').on('click', function() {
-    if(page == 'SEARCHPURCHASEORDER' || page == 'SEARCHSALENOSHIP' || page == 'SEARCHPRODUCTIONORDER' || page == 'SEARCHPURORPRO' || page == 'SEARCHPURORPRO_MFG') { 
-        return window.location.href = guideURL +'/'+ page +'/index.php';
+    // window.history.back();
+    unsetSession(this.form);
+    if(page == 'SEARCHPURCHASEORDER') {
+        return window.location.href=$('#sessionUrl').val() + '/guide/SEARCHPURCHASEORDER/index.php';
     } else {
         return window.close();
     }
+    
 });
 
 function HandleResult(result) {
     try {
-        if(page == 'SEARCHSALE' || page == 'SEARCHPURCHASE' || page == 'ITEMMASTERINQUIRY' || page == 'BMENTRY' || page == 'PROCESSMASTER') {
-            window.opener.HandlePopupResultIndex('ITEMCD', result, index);
-        } else if(page == 'ACC_SALEQUOTEENTRY_MFG' || page == 'ACC_SALEORDERENTRY_MFG' || page == 'ACC_SALEQUOTEENTRY_THA' || page == 'ACC_SALEENTRY_THA2' || page == 'ACC_SALEENTRY_THA3' || page == 'ACC_PURCHASEREQUISITION_THA' || page == 'ACC_PURCHSEORDERENTRY_THA' || page == 'ACC_RECEIVEPURCHASE_THA' || page == 'ORDERBMENTRY') {
-            window.opener.HandlePopupItem(result, index);  
-        } else if(page == 'ITEMMASTER_CLONE') {
-            window.opener.HandlePopupResult('ITEMCLONE', result);
-        } else if(page == 'ITEMCOSTCSV' || page == 'MANUFACTURINGPLAN' || page == 'PLANVIEW' || page == 'CLEARANCEMONTHENTRY' || page == 'INVMOVINGREVIEW') {
-            window.opener.HandlePopupResult('ITEMCODE', result);
+        if(page == 'ORDERBMENTRY_MFG') {
+            window.opener.HandlePopupResult('ALLOCORDERNO', result);
         } else {
-            window.opener.HandlePopupResult('ITEMCD', result);
+            window.opener.HandlePopupResult('ODRNO', result);
         }
     } catch (err) {
         // console.log(err);
@@ -71,6 +74,22 @@ function HandleResult(result) {
     return false;
 }
 
+async function unsetSession(form) {
+    $('#loading').show();
+    let data = new FormData();
+    data.append('action', 'unsetsession');
+
+    await axios.post('../SEARCHPURORPRO/function/index_x.php', data)
+    .then(response => {
+        // console.log(response.data)
+        clearForm(form);
+        $('#loading').hide();
+    })
+    .catch(e => {
+        console.log(e);
+    });
+}
+
 async function clearForm(form) {
     // clearing inputs
     var inputs = form.getElementsByTagName('input');
@@ -78,6 +97,9 @@ async function clearForm(form) {
         switch (inputs[i].type) {
             // case 'hidden':
             case 'text':
+                inputs[i].value = '';
+                break;
+            case 'date':
                 inputs[i].value = '';
                 break;
             case 'radio':
@@ -98,7 +120,7 @@ async function clearForm(form) {
     // clearing table empty Row
     $('#table_result > tbody > tr').remove();
     for (var i = 0; i < 10; i++) {
-        $('#table_result tbody').append('<tr class="row-empty" id="rowId'+i+'">' +
+        $('#table_result tbody').append('<tr class="divide-y divide-gray-200">' +
                                         '<td class="h-6 border border-slate-700"></td>' +
                                         '<td class="h-6 border border-slate-700"></td>' +
                                         '<td class="h-6 border border-slate-700"></td>' +
@@ -108,9 +130,6 @@ async function clearForm(form) {
     }
 
     document.getElementById('rowcount').innerHTML = '0';
-
-    // refresh
-    // window.location.href = 'index.php';
 
     return false;
 }

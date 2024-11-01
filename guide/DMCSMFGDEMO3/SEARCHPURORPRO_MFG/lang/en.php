@@ -11,7 +11,7 @@
         'detail' => 'Detail',
         'title' => 'Title',
         'value' => 'Value',
-        'searchpurorpro' => 'Index of Order',
+        'searchpurorpro' => 'Index of Order (MFG)',
         'order' => 'Order',
         'item' => 'Item',
         'issuedate' => 'Issue date',

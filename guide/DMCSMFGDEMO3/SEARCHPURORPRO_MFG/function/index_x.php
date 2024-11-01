@@ -13,8 +13,8 @@ if (isset($_SESSION['LANG'])) {
 }
 
 $syslogic = new Syslogic;
-$javaFunc = new SearchPurOrPro;
-$systemName = strtolower('SEARCHPURORPRO');
+$javaFunc = new SearchPurOrProMFG;
+$systemName = strtolower('SEARCHPURORPROMFG');
 
 $minrow = 0;
 $maxrow = 10;

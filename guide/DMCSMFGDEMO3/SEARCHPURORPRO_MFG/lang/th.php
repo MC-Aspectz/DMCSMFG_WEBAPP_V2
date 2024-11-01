@@ -11,7 +11,7 @@
         'detail' => 'รายละเอียด',
         'title' => 'หัวข้อ',
         'value' => 'ค่า',
-        'searchpurorpro' => 'Index of Order',
+        'searchpurorpro' => 'Index of Order (MFG)',
         'order' => 'ใบสั่ง',
         'item' => 'สินค้า',
         'issuedate' => 'วันที่ออก',

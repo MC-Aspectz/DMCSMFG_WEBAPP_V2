@@ -1,10 +1,10 @@
 <?php
 require_once(dirname(__FILE__, 5) . '/common/SessionStart.php');
 
-class SearchPurOrPro {
+class SearchPurOrProMFG {
 
     public function __construct() {
-        $this->APPCODE = 'SEARCHPURORPRO';
+        $this->APPCODE = 'SEARCHPURORPRO_MFG';
     }
 
     public function getItem($P1) {
@@ -16,7 +16,7 @@ class SearchPurOrPro {
 
     public function searchPurOrPro($ODRTYP, $P1, $P2, $P3) {
         $Param = array('ODRTYP' => $ODRTYP, 'P1' => $P1, 'P2' => $P2, 'P3' => $P3);
-        $cmd = GetRequestData($Param, 'search.SearchGeneral.searchPurOrPro', $this->APPCODE, '');
+        $cmd = GetRequestData($Param, 'search.SearchGeneral.searchPurOrPro_MFG', $this->APPCODE, '');
         $data = ExecuteAll($cmd, $errorMessage);
         return $data;
     }

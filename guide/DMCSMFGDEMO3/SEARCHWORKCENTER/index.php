@@ -37,39 +37,36 @@
             </div>
         </div>
 
-        <div class="table">
-            <table id="table_result" class="w-full border-collapse border border-slate-500">
-                <thead class="w-full bg-gray-100">
-                    <tr class="flex w-full divide-x">
-                        <th class="w-4/12 text-left pl-1">
+        <div id="table-area" class="overflow-scroll px-2 block h-[280px]">
+            <table id="table_result" class="quote_table w-full border-collapse border border-slate-500">
+                <thead class="sticky top-0 z-20 bg-gray-50">
+                    <tr class="border border-gray-600">
+                        <th class="px-6 text-center border border-slate-700 text-left">
                             <span class="text-color text-sm font-semibold tracking-wide whitespace-nowrap"><?=$lang['WC_CODE']; ?></span>
                         </th>
-                        <th class="w-8/12 text-left pl-1">
+                        <th class="px-6 text-center border border-slate-700 text-center">
                             <span class="text-color text-sm font-semibold tracking-wide whitespace-nowrap"><?=$lang['WORK_CENTER_NAME']; ?></span>
                         </th>
                     </tr>
                 </thead>
-                <tbody class="flex flex-col overflow-y-scroll w-full h-[250px]"><?php
-                    if (!empty($tdata)) { $run = 0; $minrow = count($tdata);
-                        foreach ($tdata as $item) { ?>
-                            <tr class="flex w-full p-0 divide-x">
-                                <td class="hidden"><?= ++$run; ?></td>
-                                <td class="h-6 w-4/12 text-sm pl-1"><?=$item['WCCD'] ?></td>
-                                <td class="h-6 w-8/12 text-sm pl-1"><?=$item['WCNAME'] ?></td>
-                            </tr> <?php
+                <tbody id="dvwdetail" class="divide-y divide-gray-200"><?php
+                    if (!empty($tdata)) { $minrow = count($tdata);
+                        foreach($tdata as $key => $item) { ?>
+                            <tr class="row-id">
+                                <td class="hidden"><?=$key; ?></td>
+                                <td class="h-6 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['WCCD']) ? $item['WCCD']: '' ?></td>
+                                <td class="h-6 pl-1 text-sm border border-slate-700 text-left whitespace-nowrap"><?=isset($item['WCNAME']) ? $item['WCNAME']: '' ?></td>
+                            </tr><?php 
                         }
-                    }
-                    for ($i = $minrow+1; $i <= $maxrow; $i++) {  ?>
-                        <tr class="flex w-full p-0 divide-x">
-                            <td class="h-6 w-4/12"></td>
-                            <td class="h-6 w-8/12"></td>
+                    } 
+                    for ($i = $minrow+1; $i <= $maxrow; $i++) { ?>
+                        <tr class="row-empty" id="rowId<?=$i?>">
+                            <td class="h-6 border border-slate-700"></td>
+                            <td class="h-6 border border-slate-700"></td>
                         </tr><?php
                     } ?>
                 </tbody>
             </table>
-            <div class="flex p-2">
-                <label class="text-color h-6 text-[12px]"><?=$lang['rowcount']; ?>  <span id="rowcount"><?=$minrow?></span></label>
-            </div>
         </div>
 
         <div class="flex my-2">

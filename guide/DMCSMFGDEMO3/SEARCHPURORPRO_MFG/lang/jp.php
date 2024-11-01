@@ -11,7 +11,7 @@
         'detail' => '詳細',
         'title' => 'タイトル',
         'value' => '値',
-        'searchpurorpro' => '注文のインデックス',
+        'searchpurorpro' => '注文のインデックス (MFG）',
         'order' => '注文',
         'item' => '商品',
         'issuedate' => '発行日',
